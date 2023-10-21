@@ -1,5 +1,7 @@
 package user
 
+import "layanan-kependudukan-api/helper"
+
 type UserFormatter struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name"`
@@ -8,6 +10,8 @@ type UserFormatter struct {
 	Token      string `json:"token"`
 	Role       string `json:"role"`
 	AvatarPath string `json:"avatar_path"`
+	CreatedAt  string `json:"created_at"`
+	UpdatedAt  string `json:"updated_at"`
 }
 
 func FormatUser(user User, token string) UserFormatter {
@@ -19,6 +23,8 @@ func FormatUser(user User, token string) UserFormatter {
 		Token:      token,
 		Role:       user.Role,
 		AvatarPath: user.AvatarFileName,
+		CreatedAt:  helper.FormatDateToString(user.CreatedAt),
+		UpdatedAt:  helper.FormatDateToString(user.UpdatedAt),
 	}
 
 	return formatter

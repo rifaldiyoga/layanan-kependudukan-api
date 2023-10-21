@@ -16,18 +16,20 @@ type TypeFormatter struct {
 }
 
 type LayananFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
-	Type string `json:"type"`
+	ID        int    `json:"id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	CreatedAt string `json:"created_at"`
 }
 
 func FormatLayanan(Layanan Layanan) LayananFormatter {
 	formatter := LayananFormatter{
-		ID:   Layanan.ID,
-		Code: Layanan.Code,
-		Name: Layanan.Name,
-		Type: Layanan.Type,
+		ID:        Layanan.ID,
+		Code:      Layanan.Code,
+		Name:      Layanan.Name,
+		Type:      Layanan.Type,
+		CreatedAt: helper.FormatDateToString(Layanan.CreatedAt),
 	}
 
 	return formatter

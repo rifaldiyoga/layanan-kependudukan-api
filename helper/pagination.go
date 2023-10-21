@@ -22,7 +22,7 @@ func (p *Pagination) GetOffset() int {
 
 func (p *Pagination) GetLimit() int {
 	if p.Limit == 0 {
-		p.Limit = 10
+		p.Limit = 1000
 	}
 	return p.Limit
 }
@@ -55,7 +55,7 @@ func GetPagingValue(c *gin.Context, pagination *Pagination) {
 
 	pageSize, _ := strconv.Atoi(c.Query("limit"))
 	if pageSize <= 0 {
-		pageSize = 10
+		pageSize = 1000
 	}
 
 	pagination.Page = page

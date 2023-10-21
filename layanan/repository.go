@@ -1,10 +1,13 @@
 package layanan
 
 import (
+	"layanan-kependudukan-api/helper"
+
 	"gorm.io/gorm"
 )
 
 type Repository interface {
+	FindAllPaging(pagination helper.Pagination) (helper.Pagination, error)
 	FindAll() ([]Layanan, error)
 	FindRecom() ([]Layanan, error)
 	FindByType() ([]string, error)
@@ -20,6 +23,17 @@ type repository struct {
 
 func NewRepsitory(db *gorm.DB) *repository {
 	return &repository{db}
+}
+
+func (r *repository) FindAllPaging(pagination helper.Pagination) (helper.Pagination, error) {
+	var layanans []Layanan
+
+	err := r.db.Scopes(helper.Paginate(layanans, &pagination, r.db)).Find(&layanans).Error
+	if err != nil {
+		return pagination, err
+	}
+	pagination.Data = layanans
+	return pagination, err
 }
 
 func (r *repository) FindAll() ([]Layanan, error) {

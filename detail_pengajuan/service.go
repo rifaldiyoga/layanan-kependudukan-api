@@ -45,7 +45,16 @@ func (s *service) CreateDetailPengajuan(pengajuanID int, status string, user use
 	DetailPengajuan := DetailPengajuan{}
 
 	DetailPengajuan.CreatedBy = user.ID
-	DetailPengajuan.Status = status
+
+	if status == "" {
+		DetailPengajuan.Status = "PENDING"
+	} else {
+		if user.Role != "PENDUDUK" {
+			DetailPengajuan.Status = status + "_" + user.Role
+		} else {
+			DetailPengajuan.Status = status
+		}
+	}
 	DetailPengajuan.Name = user.Name
 	DetailPengajuan.PengajuanID = pengajuanID
 	DetailPengajuan.CreatedAt = time.Now()

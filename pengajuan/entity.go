@@ -12,6 +12,7 @@ type Pengajuan struct {
 	Layanan    string                             `json:"layanan"`
 	LayananID  int                                `json:"layanan_id"`
 	Status     string                             `json:"status"`
+	NIK        string                             `json:"nik"`
 	Keterangan string                             `json:"keterangan"`
 	CreatedBy  int                                `json:"created_by"`
 	CreatedAt  time.Time                          `json:"created_at"`

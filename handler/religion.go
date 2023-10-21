@@ -119,5 +119,29 @@ func (h *religionHandler) GetReligions(c *gin.Context) {
 
 	response := helper.APIResponse("Success get religion", http.StatusOK, "success", pagination)
 	c.JSON(http.StatusOK, response)
+}
 
+func (h *religionHandler) GetReligion(c *gin.Context) {
+	var inputID religion.GetReligionDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get religion", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newReligion, err := h.religionService.GetReligionByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get religion", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := religion.FormatReligion(newReligion)
+	response := helper.APIResponse("Success Get religion", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
 }

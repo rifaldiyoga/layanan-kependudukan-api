@@ -104,6 +104,26 @@ func (h *layananHandler) DeleteLayanan(c *gin.Context) {
 
 func (h *layananHandler) GetLayanans(c *gin.Context) {
 
+	var pagination helper.Pagination
+
+	helper.GetPagingValue(c, &pagination)
+
+	pagination, err := h.layananService.GetLayanansPaging(pagination)
+	if err != nil {
+		response := helper.APIResponse("Failed get Layanan", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	Layanans, _ := pagination.Data.([]layanan.Layanan)
+	pagination.Data = layanan.FormatLayanans(Layanans)
+
+	response := helper.APIResponse("Success get Layanan", http.StatusOK, "success", pagination)
+	c.JSON(http.StatusOK, response)
+
+}
+
+func (h *layananHandler) GetLayanansGrouped(c *gin.Context) {
+
 	types, err := h.layananService.GetTypes()
 	if err != nil {
 		response := helper.APIResponse("Failed get types", http.StatusBadRequest, "error", err.Error())
@@ -140,4 +160,29 @@ func (h *layananHandler) GetRekomLayanans(c *gin.Context) {
 	response := helper.APIResponse("Success get layanan", http.StatusOK, "success", layananFormatter)
 	c.JSON(http.StatusOK, response)
 
+}
+
+func (h *layananHandler) GetLayanan(c *gin.Context) {
+	var inputID layanan.GetLayananDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get Layanan", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newLayanan, err := h.layananService.GetLayananByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get Layanan", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := layanan.FormatLayanan(newLayanan)
+	response := helper.APIResponse("Success Get Layanan", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
 }

@@ -121,3 +121,28 @@ func (h *educationHandler) GetEducations(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func (h *educationHandler) GetEducation(c *gin.Context) {
+	var inputID education.GetEducationDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get Education", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newEducation, err := h.educationService.GetEducationByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get Education", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := education.FormatEducation(newEducation)
+	response := helper.APIResponse("Success Get Education", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}

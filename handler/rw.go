@@ -119,5 +119,29 @@ func (h *rwHandler) GetRWs(c *gin.Context) {
 
 	response := helper.APIResponse("Success get rw", http.StatusOK, "success", pagination)
 	c.JSON(http.StatusOK, response)
+}
 
+func (h *rwHandler) GetRW(c *gin.Context) {
+	var inputID rw.GetRWDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get RW", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newRW, err := h.rwService.GetRWByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get RW", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := rw.FormatRW(newRW)
+	response := helper.APIResponse("Success Get RW", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
 }

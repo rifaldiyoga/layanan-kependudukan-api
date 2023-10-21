@@ -10,7 +10,7 @@ type Service interface {
 	GetPengajuanByID(ID int) (Pengajuan, error)
 	GetPengajuans(pagination helper.Pagination, user user.User) (helper.Pagination, error)
 	CreatePengajuan(input CreatePengajuanInput, user user.User) (Pengajuan, error)
-	UpdatePengajuan(ID GetPengajuanDetailInput, input CreatePengajuanInput) (Pengajuan, error)
+	UpdatePengajuan(ID GetPengajuanDetailInput, input CreatePengajuanInput, user user.User) (Pengajuan, error)
 	DeletePengajuan(ID GetPengajuanDetailInput) error
 }
 
@@ -35,12 +35,18 @@ func (s *service) CreatePengajuan(input CreatePengajuanInput, user user.User) (P
 	Pengajuan := Pengajuan{}
 
 	Pengajuan.Keterangan = input.Keterangan
-	Pengajuan.CreatedBy = user.ID
 	Pengajuan.Name = user.Name
 	Pengajuan.Layanan = input.Layanan
 	Pengajuan.LayananID = input.LayananID
+	Pengajuan.CreatedBy = user.ID
 	Pengajuan.CreatedAt = time.Now()
 	Pengajuan.UpdatedAt = time.Now()
+	if input.Status == "" {
+		Pengajuan.Status = "PENDING"
+	} else {
+		Pengajuan.Status = input.Status + "_" + user.Role
+	}
+	Pengajuan.NIK = user.Nik
 
 	Pengajuan, err := s.repository.Save(Pengajuan)
 	if err != nil {
@@ -53,15 +59,29 @@ func (s *service) CreatePengajuan(input CreatePengajuanInput, user user.User) (P
 	return newPengajuan, err
 }
 
-func (s *service) UpdatePengajuan(inputDetail GetPengajuanDetailInput, input CreatePengajuanInput) (Pengajuan, error) {
-	Pengajuan, err := s.repository.FindByID(inputDetail.ID)
+func (s *service) UpdatePengajuan(inputDetail GetPengajuanDetailInput, input CreatePengajuanInput, user user.User) (Pengajuan, error) {
+	lastPengajuan, err := s.repository.FindByID(inputDetail.ID)
 	if err != nil {
-		return Pengajuan, err
+		return lastPengajuan, err
 	}
 
-	// Pengajuan.Code = input.Code
-	// Pengajuan.Name = input.Name
+	Pengajuan := Pengajuan{}
+	Pengajuan.ID = inputDetail.ID
+	Pengajuan.Keterangan = input.Keterangan
+	Pengajuan.Name = lastPengajuan.Name
+	Pengajuan.Layanan = lastPengajuan.Layanan
+	Pengajuan.LayananID = lastPengajuan.LayananID
+	Pengajuan.CreatedBy = lastPengajuan.CreatedBy
+	Pengajuan.CreatedAt = lastPengajuan.CreatedAt
 	Pengajuan.UpdatedAt = time.Now()
+	if input.Status == "" {
+		Pengajuan.Status = "PENDING"
+	} else {
+		if user.Role != "PENDUDUK" {
+			Pengajuan.Status = input.Status + "_" + user.Role
+		}
+	}
+	Pengajuan.NIK = lastPengajuan.NIK
 
 	newPengajuan, err := s.repository.Update(Pengajuan)
 	return newPengajuan, err

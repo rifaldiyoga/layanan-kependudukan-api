@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"layanan-kependudukan-api/auth"
 	"layanan-kependudukan-api/detail_pengajuan"
 	"layanan-kependudukan-api/helper"
@@ -25,7 +24,6 @@ func NewpengajuanHandler(pengajuanService pengajuan.Service, detailPengajuanServ
 func (h *pengajuanHandler) CreatePengajuan(c *gin.Context) {
 	var input pengajuan.CreatePengajuanInput
 
-	fmt.Println(input)
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		errors := helper.FormatValidationError(err)
@@ -74,6 +72,9 @@ func (h *pengajuanHandler) UpdatePengajuan(c *gin.Context) {
 	var inputID pengajuan.GetPengajuanDetailInput
 	var inputData pengajuan.CreatePengajuanInput
 
+	currentUser, _ := c.Get("currentUser")
+	userObject := currentUser.(user.User)
+
 	errUri := c.ShouldBindUri(&inputID)
 	if errUri != nil {
 		errors := helper.FormatValidationError(errUri)
@@ -94,21 +95,28 @@ func (h *pengajuanHandler) UpdatePengajuan(c *gin.Context) {
 		return
 	}
 
-	newpengajuan, err := h.pengajuanService.UpdatePengajuan(inputID, inputData)
+	newPengajuan, err := h.pengajuanService.UpdatePengajuan(inputID, inputData, userObject)
 	if err != nil {
 		response := helper.APIResponse("Failed Update pengajuan", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	// detailPengajuans, err := h.detailPengajuanService.GetDetailByPengajuan(newpengajuan.ID)
-	// if err != nil {
-	// 	response := helper.APIResponse("Failed create pengajuan", http.StatusBadRequest, "error", nil)
-	// 	c.JSON(http.StatusBadRequest, response)
-	// 	return
-	// }
+	_, err = h.detailPengajuanService.CreateDetailPengajuan(inputID.ID, inputData.Status, userObject)
+	if err != nil {
+		response := helper.APIResponse("Failed create pengajuan", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 
-	formatter := pengajuan.FormatPengajuan(newpengajuan)
+	newPengajuan, err = h.pengajuanService.GetPengajuanByID(newPengajuan.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed get pengajuan", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := pengajuan.FormatPengajuan(newPengajuan)
 	response := helper.APIResponse("Success Update pengajuan", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }
@@ -156,4 +164,29 @@ func (h *pengajuanHandler) GetPengajuans(c *gin.Context) {
 	response := helper.APIResponse("Success get pengajuan", http.StatusOK, "success", pagination)
 	c.JSON(http.StatusOK, response)
 
+}
+
+func (h *pengajuanHandler) GetPengajuan(c *gin.Context) {
+	var inputID pengajuan.GetPengajuanDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get Pengajuan", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newPengajuan, err := h.pengajuanService.GetPengajuanByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get Pengajuan", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := pengajuan.FormatPengajuan(newPengajuan)
+	response := helper.APIResponse("Success Get Pengajuan", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
 }

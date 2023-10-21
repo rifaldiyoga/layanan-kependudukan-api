@@ -6,7 +6,6 @@ import (
 
 type PengajuanFormatter struct {
 	Pengajuan
-	Status    string `json:"status"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
@@ -16,7 +15,6 @@ func FormatPengajuan(Pengajuan Pengajuan) PengajuanFormatter {
 		Pengajuan: Pengajuan,
 		CreatedAt: helper.FormatDateToString(Pengajuan.CreatedAt),
 		UpdatedAt: helper.FormatDateToString(Pengajuan.UpdatedAt),
-		Status:    Pengajuan.Detail[len(Pengajuan.Detail)-1].Status,
 	}
 
 	return formatter

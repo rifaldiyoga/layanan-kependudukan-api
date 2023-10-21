@@ -123,3 +123,28 @@ func (h *articleHandler) GetArticles(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func (h *articleHandler) GetArticle(c *gin.Context) {
+	var inputID article.GetArticleDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get Article", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newArticle, err := h.articleService.GetArticleByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get Article", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := article.FormatArticle(newArticle)
+	response := helper.APIResponse("Success Get Article", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}

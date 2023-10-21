@@ -121,3 +121,28 @@ func (h *jobHandler) GetJobs(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func (h *jobHandler) GetJob(c *gin.Context) {
+	var inputID job.GetJobDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get Job", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newJob, err := h.jobService.GetJobByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get Job", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := job.FormatJob(newJob)
+	response := helper.APIResponse("Success Get Job", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}

@@ -121,3 +121,28 @@ func (h *rtHandler) GetRTs(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func (h *rtHandler) GetRT(c *gin.Context) {
+	var inputID rt.GetRTDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get RT", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newRT, err := h.rtService.GetRTByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get RT", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := rt.FormatRT(newRT)
+	response := helper.APIResponse("Success Get RT", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}

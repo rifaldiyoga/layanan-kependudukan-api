@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -74,6 +75,14 @@ func FormatDateToString(time time.Time) string {
 	return time.Format("2006-01-02 15:04:05")
 }
 
+func FormatStringToDate(date string) time.Time {
+	parse, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return time.Now()
+	}
+	return parse
+}
+
 func GetType(Type string) string {
 	myMap := map[string]string{
 		"LU":  "Layanan Umum",
@@ -82,4 +91,14 @@ func GetType(Type string) string {
 		"LKK": "Layanan Kematian & Kelahiran",
 	}
 	return myMap[Type]
+}
+
+func GenerateNIK(date time.Time, count int) string {
+	counter := fmt.Sprintf("%04d", count)
+	return "357901" + date.Format("020106") + counter
+}
+
+func GenerateNoKK(count int) string {
+	counter := fmt.Sprintf("%04d", count)
+	return "357901" + time.Now().Format("020106") + counter
 }

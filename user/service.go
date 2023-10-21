@@ -2,12 +2,16 @@ package user
 
 import (
 	"errors"
+	"layanan-kependudukan-api/helper"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
-	RegiserUser(input RegisterUserInput) (User, error)
+	GetUsers(pagination helper.Pagination) (helper.Pagination, error)
+	RegiserUser(input CreateUserInput) (User, error)
+	UpdateUser(ID GetUserDetailInput, input CreateUserInput) (User, error)
 	Login(input LoginInput) (User, error)
 	IsEmailAvailable(input EmailInput) (bool, error)
 	GetUserById(ID int) (User, error)
@@ -21,7 +25,7 @@ func NewService(repository *repository) *service {
 	return &service{repository}
 }
 
-func (s *service) RegiserUser(input RegisterUserInput) (User, error) {
+func (s *service) RegiserUser(input CreateUserInput) (User, error) {
 
 	user := User{}
 	user.Nik = input.Nik
@@ -36,6 +40,7 @@ func (s *service) RegiserUser(input RegisterUserInput) (User, error) {
 	}
 
 	user.Password = string(password)
+	user.Role = input.Role
 
 	newUser, err := s.repository.Save(user)
 
@@ -63,6 +68,12 @@ func (s *service) Login(input LoginInput) (User, error) {
 
 	if err != nil {
 		return user, errors.New("Email or password wrong!")
+	}
+
+	if input.Type == "WEB" {
+		if user.Role == "PENDUDUK" || user.Role == "RT/RW" {
+			return user, errors.New("User yang dipakai tidak dapat login pada website")
+		}
 	}
 
 	return user, nil
@@ -95,4 +106,38 @@ func (s *service) GetUserById(ID int) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (s *service) GetUsers(pagination helper.Pagination) (helper.Pagination, error) {
+	pagination, err := s.repository.FindAll(pagination)
+
+	return pagination, err
+}
+
+func (s *service) UpdateUser(inputDetail GetUserDetailInput, input CreateUserInput) (User, error) {
+	user, err := s.repository.FindByID(inputDetail.ID)
+	if err != nil {
+		return user, err
+	}
+
+	user.Nik = input.Nik
+	user.Name = input.Name
+	user.Email = input.Email
+	if input.Password != "" {
+		user.Password = input.Password
+		password, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+
+		if err != nil {
+			return user, err
+		}
+
+		user.Password = string(password)
+	}
+
+	user.Role = input.Role
+
+	user.UpdatedAt = time.Now()
+
+	newUser, err := s.repository.Update(user)
+	return newUser, err
 }

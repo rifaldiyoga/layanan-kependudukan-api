@@ -1,11 +1,13 @@
 package layanan
 
 import (
+	"layanan-kependudukan-api/helper"
 	"time"
 )
 
 type Service interface {
 	GetLayananByID(ID int) (Layanan, error)
+	GetLayanansPaging(pagination helper.Pagination) (helper.Pagination, error)
 	GetLayanans() ([]Layanan, error)
 	GetRekomLayanans() ([]Layanan, error)
 	GetTypes() ([]string, error)
@@ -81,4 +83,10 @@ func (s *service) GetLayanans() ([]Layanan, error) {
 func (s *service) GetTypes() ([]string, error) {
 	layanan, err := s.repository.FindByType()
 	return layanan, err
+}
+
+func (s *service) GetLayanansPaging(pagination helper.Pagination) (helper.Pagination, error) {
+	pagination, err := s.repository.FindAllPaging(pagination)
+
+	return pagination, err
 }

@@ -121,3 +121,28 @@ func (h *kelurahanHandler) GetKelurahans(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func (h *kelurahanHandler) GetKelurahan(c *gin.Context) {
+	var inputID kelurahan.GetKelurahanDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get Kelurahan", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newKelurahan, err := h.kelurahanService.GetKelurahanByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get Kelurahan", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := kelurahan.FormatKelurahan(newKelurahan)
+	response := helper.APIResponse("Success Get Kelurahan", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}

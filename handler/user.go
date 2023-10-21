@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"layanan-kependudukan-api/auth"
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/user"
@@ -23,7 +24,7 @@ func (h *userHandler) RegiserUser(c *gin.Context) {
 	// map input dari user ke struct Register
 	// struct di atas diatas sebagai param service
 
-	var input user.RegisterUserInput
+	var input user.CreateUserInput
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -126,5 +127,113 @@ func (h *userHandler) CheckEmailAvailablity(c *gin.Context) {
 
 	response := helper.APIResponse(metaMsg, http.StatusOK, "success", data)
 
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) GetUsers(c *gin.Context) {
+
+	var pagination helper.Pagination
+
+	helper.GetPagingValue(c, &pagination)
+
+	pagination, err := h.userService.GetUsers(pagination)
+	if err != nil {
+		response := helper.APIResponse("Failed get user", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	users, _ := pagination.Data.([]user.User)
+	pagination.Data = user.FormatUsers(users)
+
+	response := helper.APIResponse("Success get user", http.StatusOK, "success", pagination)
+	c.JSON(http.StatusOK, response)
+
+}
+
+func (h *userHandler) GetUser(c *gin.Context) {
+	var inputID user.GetUserDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get User", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newUser, err := h.userService.GetUserById(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get User", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := user.FormatUser(newUser, "")
+	response := helper.APIResponse("Success Get User", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) CreateUser(c *gin.Context) {
+	var input user.CreateUserInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		fmt.Print(err.Error())
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newuser, err := h.userService.RegiserUser(input)
+	if err != nil {
+		response := helper.APIResponse("Failed create user", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := user.FormatUser(newuser, "")
+	response := helper.APIResponse("Success create user", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) UpdateUser(c *gin.Context) {
+	var inputID user.GetUserDetailInput
+	var inputData user.CreateUserInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		fmt.Print(errUri.Error())
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Update user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	err := c.ShouldBindJSON(&inputData)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Update user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newuser, err := h.userService.UpdateUser(inputID, inputData)
+	if err != nil {
+		response := helper.APIResponse("Failed Update user", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := user.FormatUser(newuser, "")
+	response := helper.APIResponse("Success Update user", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }

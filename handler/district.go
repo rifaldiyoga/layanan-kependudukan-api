@@ -119,5 +119,29 @@ func (h *districtHandler) GetDistricts(c *gin.Context) {
 
 	response := helper.APIResponse("Success get district", http.StatusOK, "success", pagination)
 	c.JSON(http.StatusOK, response)
+}
 
+func (h *districtHandler) GetDistrict(c *gin.Context) {
+	var inputID district.GetDistrictDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get District", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newDistrict, err := h.districtService.GetDistrictByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get District", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := district.FormatDistrict(newDistrict)
+	response := helper.APIResponse("Success Get District", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
 }

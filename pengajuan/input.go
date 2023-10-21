@@ -10,3 +10,8 @@ type CreatePengajuanInput struct {
 	LayananID  int    `json:"layanan_id" binding:"required"`
 	Status     string `json:"status"`
 }
+
+type UpdateStatusPengajuanInput struct {
+	PengajuanID string `json:"pengajuan_id" binding:"required"`
+	Status      string `json:"status" binding:"required"`
+}

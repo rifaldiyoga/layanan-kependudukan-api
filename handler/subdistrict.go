@@ -119,5 +119,29 @@ func (h *subdistrictHandler) GetSubDistricts(c *gin.Context) {
 
 	response := helper.APIResponse("Success get subdistrict", http.StatusOK, "success", pagination)
 	c.JSON(http.StatusOK, response)
+}
 
+func (h *subdistrictHandler) GetSubDistrict(c *gin.Context) {
+	var inputID subdistrict.GetSubDistrictDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get SubDistrict", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newSubDistrict, err := h.subdistrictService.GetSubDistrictByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get SubDistrict", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := subdistrict.FormatSubDistrict(newSubDistrict)
+	response := helper.APIResponse("Success Get SubDistrict", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
 }

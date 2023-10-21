@@ -121,3 +121,28 @@ func (h *provinceHandler) GetProvinces(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func (h *provinceHandler) GetProvince(c *gin.Context) {
+	var inputID province.GetProvinceDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Get Province", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	newProvince, err := h.provinceService.GetProvinceByID(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Get Province", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := province.FormatProvince(newProvince)
+	response := helper.APIResponse("Success Get Province", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
