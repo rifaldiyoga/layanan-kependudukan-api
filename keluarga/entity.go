@@ -5,25 +5,19 @@ import (
 )
 
 type Keluarga struct {
-	ID           int
-	Nik          string
-	FullName     string
-	BirthPlace   string
-	BirthDate    time.Time
-	ReligionID   int
-	PendidikanID int
-	PekerjaanID  int
-	Nationality  string
-	MariedType   string
-	RtID         int
-	RwID         int
-	KelurahanID  int
-	KecamatanID  int
-	KotaID       int
-	ProvinsiID   int
-	jk           string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID                int       `json:"id"`
+	NoKK              string    `json:"no_kk"`
+	NIKKepalaKeluarga string    `json:"nik_kepala_keluarga"`
+	KepalaKeluarga    string    `json:"kepala_keluarga"`
+	Address           string    `json:"alamat"`
+	RtID              int       `json:"rt_id"`
+	RwID              int       `json:"rw_id"`
+	KelurahanID       int       `json:"kelurahan_id"`
+	KecamatanID       int       `json:"subdistrict_id"`
+	KotaID            int       `json:"district_iid"`
+	ProvinsiID        int       `json:"province_id"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 func (Keluarga) TableName() string {

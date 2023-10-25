@@ -1,10 +1,14 @@
 package penduduk
 
-import "time"
+import (
+	"layanan-kependudukan-api/helper"
+	"time"
+)
 
 type PendudukFormatter struct {
 	ID            int       `json:"id"`
 	NIK           string    `json:"nik"`
+	NoKK          string    `json:"no_kk"`
 	Fullname      string    `json:"fullname"`
 	BirthPlace    string    `json:"birth_place"`
 	BirthDate     time.Time `json:"birth_date"`
@@ -23,8 +27,9 @@ type PendudukFormatter struct {
 	DistictID     int       `json:"district_id"`
 	ProvinceID    int       `json:"province_id"`
 	JK            string    `json:"jk"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	StatusFamily  string    `json:"status_family"`
+	CreatedAt     string    `json:"created_at"`
+	UpdatedAt     string    `json:"updated_at"`
 }
 
 func FormatPenduduk(penduduk Penduduk) PendudukFormatter {
@@ -49,8 +54,10 @@ func FormatPenduduk(penduduk Penduduk) PendudukFormatter {
 		DistictID:     penduduk.KotaID,
 		ProvinceID:    penduduk.ProvinsiID,
 		JK:            penduduk.JK,
-		CreatedAt:     penduduk.CreatedAt,
-		UpdatedAt:     penduduk.UpdatedAt,
+		NoKK:          penduduk.NoKK,
+		StatusFamily:  penduduk.StatusFamily,
+		CreatedAt:     helper.FormatDateToString(penduduk.CreatedAt),
+		UpdatedAt:     helper.FormatDateToString(penduduk.UpdatedAt),
 	}
 
 	return formatter

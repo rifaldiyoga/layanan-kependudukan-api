@@ -7,6 +7,7 @@ import (
 type Penduduk struct {
 	ID           int
 	NIK          string
+	NoKK         string
 	Fullname     string
 	BirthPlace   string
 	BirthDate    time.Time
@@ -25,6 +26,7 @@ type Penduduk struct {
 	ProvinsiID   int
 	JK           string
 	Address      string
+	StatusFamily string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

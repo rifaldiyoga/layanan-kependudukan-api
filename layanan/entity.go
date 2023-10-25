@@ -7,6 +7,7 @@ type Layanan struct {
 	Code      string
 	Name      string
 	Type      string
+	IsConfirm bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

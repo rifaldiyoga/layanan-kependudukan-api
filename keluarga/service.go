@@ -2,6 +2,7 @@ package keluarga
 
 import (
 	"layanan-kependudukan-api/helper"
+	"strconv"
 	"time"
 )
 
@@ -22,38 +23,73 @@ func NewService(repository *repository) *service {
 }
 
 func (s *service) GetKeluargaByID(ID int) (Keluarga, error) {
-	penduduk, err := s.repository.FindByID(ID)
+	keluarga, err := s.repository.FindByID(ID)
 
-	return penduduk, err
+	return keluarga, err
 }
 
 func (s *service) CreateKeluarga(input CreateKeluargaInput) (Keluarga, error) {
-	penduduk := Keluarga{}
+	keluarga := Keluarga{}
 
-	penduduk.UpdatedAt = time.Now()
+	if input.NoKK == "" {
+		var counter int
+		last, err := s.repository.FindLast()
+		if err != nil {
+			counter = 1
+		} else {
+			i, _ := strconv.Atoi(last.NoKK[len(last.NoKK)-4:])
+			counter = i + 1
+		}
 
-	newKeluarga, err := s.repository.Save(penduduk)
+		keluarga.NoKK = helper.GenerateNoKK(counter)
+	} else {
+		keluarga.NoKK = input.NoKK
+	}
+	keluarga.NIKKepalaKeluarga = input.NIKKepalaKeluarga
+	keluarga.KepalaKeluarga = input.KepalaKeluarga
+	keluarga.Address = input.Address
+	keluarga.RtID = input.RtID
+	keluarga.RwID = input.RwID
+	keluarga.KelurahanID = input.KelurahanID
+	keluarga.KecamatanID = input.KecamatanID
+	keluarga.CreatedAt = time.Now()
+	keluarga.UpdatedAt = time.Now()
+
+	newKeluarga, err := s.repository.Save(keluarga)
 
 	return newKeluarga, err
 }
 
 func (s *service) UpdateKeluarga(inputDetail GetKeluargaDetailInput, input CreateKeluargaInput) (Keluarga, error) {
-	penduduk := Keluarga{}
-	penduduk.ID = inputDetail.ID
-	penduduk.UpdatedAt = time.Now()
+	lastKeluarga, err := s.repository.FindByID(inputDetail.ID)
+	if err != nil {
+		return lastKeluarga, err
+	}
+	keluarga := Keluarga{}
+	keluarga.ID = inputDetail.ID
+	keluarga.NoKK = lastKeluarga.NoKK
+	keluarga.NIKKepalaKeluarga = input.NIKKepalaKeluarga
+	keluarga.KepalaKeluarga = input.KepalaKeluarga
+	keluarga.Address = input.Address
+	keluarga.RtID = input.RtID
+	keluarga.RwID = input.RwID
+	keluarga.KelurahanID = input.KelurahanID
+	keluarga.KecamatanID = input.KecamatanID
+	keluarga.CreatedAt = lastKeluarga.CreatedAt
+	keluarga.UpdatedAt = time.Now()
 
-	newKeluarga, err := s.repository.Update(penduduk)
+	newKeluarga, err := s.repository.Update(keluarga)
 	return newKeluarga, err
 }
 
 func (s *service) DeleteKeluarga(inputDetail GetKeluargaDetailInput) error {
-	penduduk, errId := s.repository.FindByID(inputDetail.ID)
+	keluarga, errId := s.repository.FindByID(inputDetail.ID)
 	if errId != nil {
 		return errId
 	}
-	penduduk.ID = inputDetail.ID
+	keluarga.ID = inputDetail.ID
 
-	err := s.repository.Delete(penduduk)
+	err := s.repository.Delete(keluarga)
 	if err != nil {
 		return err
 	}

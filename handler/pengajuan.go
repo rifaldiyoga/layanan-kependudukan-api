@@ -144,7 +144,7 @@ func (h *pengajuanHandler) DeletePengajuan(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (h *pengajuanHandler) GetPengajuans(c *gin.Context) {
+func (h *pengajuanHandler) GetPengajuanUser(c *gin.Context) {
 	currentUser, _ := c.Get("currentUser")
 	userObject := currentUser.(user.User)
 
@@ -152,7 +152,26 @@ func (h *pengajuanHandler) GetPengajuans(c *gin.Context) {
 
 	helper.GetPagingValue(c, &pagination)
 
-	pagination, err := h.pengajuanService.GetPengajuans(pagination, userObject)
+	pagination, err := h.pengajuanService.GetPengajuanUser(pagination, userObject)
+	if err != nil {
+		response := helper.APIResponse("Failed get pengajuan", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	pengajuans, _ := pagination.Data.([]pengajuan.Pengajuan)
+	pagination.Data = pengajuan.FormatPengajuans(pengajuans)
+
+	response := helper.APIResponse("Success get pengajuan", http.StatusOK, "success", pagination)
+	c.JSON(http.StatusOK, response)
+
+}
+
+func (h *pengajuanHandler) GetPengajuanAdmin(c *gin.Context) {
+	var pagination helper.Pagination
+
+	helper.GetPagingValue(c, &pagination)
+
+	pagination, err := h.pengajuanService.GetPengajuan(pagination)
 	if err != nil {
 		response := helper.APIResponse("Failed get pengajuan", http.StatusBadRequest, "error", err.Error())
 		c.JSON(http.StatusBadRequest, response)

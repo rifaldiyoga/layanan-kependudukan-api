@@ -20,6 +20,7 @@ type LayananFormatter struct {
 	Code      string `json:"code"`
 	Name      string `json:"name"`
 	Type      string `json:"type"`
+	IsConfirm bool   `json:"is_confirm"`
 	CreatedAt string `json:"created_at"`
 }
 
@@ -29,6 +30,7 @@ func FormatLayanan(Layanan Layanan) LayananFormatter {
 		Code:      Layanan.Code,
 		Name:      Layanan.Name,
 		Type:      Layanan.Type,
+		IsConfirm: Layanan.IsConfirm,
 		CreatedAt: helper.FormatDateToString(Layanan.CreatedAt),
 	}
 

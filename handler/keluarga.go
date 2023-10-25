@@ -4,6 +4,7 @@ import (
 	"layanan-kependudukan-api/auth"
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/keluarga"
+	"layanan-kependudukan-api/penduduk"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,11 +12,12 @@ import (
 
 type keluargaHandler struct {
 	keluargaService keluarga.Service
+	pendudukService penduduk.Service
 	authService     auth.Service
 }
 
-func NewKeluargaHandler(keluargaService keluarga.Service, authService auth.Service) *keluargaHandler {
-	return &keluargaHandler{keluargaService, authService}
+func NewKeluargaHandler(keluargaService keluarga.Service, pendudukService penduduk.Service, authService auth.Service) *keluargaHandler {
+	return &keluargaHandler{keluargaService, pendudukService, authService}
 }
 
 func (h *keluargaHandler) CreateKeluarga(c *gin.Context) {
@@ -36,6 +38,23 @@ func (h *keluargaHandler) CreateKeluarga(c *gin.Context) {
 		response := helper.APIResponse("Failed create keluarga", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
+	}
+
+	if input.NIKKepalaKeluarga != "" {
+		lastPenduduk, err := h.pendudukService.GetPendudukByNIK(input.NIKKepalaKeluarga)
+		if err != nil {
+			response := helper.APIResponse("Failed create keluarga", http.StatusBadRequest, "error", nil)
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
+
+		lastPenduduk.NoKK = newkeluarga.NoKK
+		_, err = h.pendudukService.UpdatePenduduks(lastPenduduk.ID, lastPenduduk)
+		if err != nil {
+			response := helper.APIResponse("Failed create keluarga", http.StatusBadRequest, "error", nil)
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
 	}
 
 	formatter := keluarga.FormatKeluarga(newkeluarga)
@@ -72,6 +91,23 @@ func (h *keluargaHandler) UpdateKeluarga(c *gin.Context) {
 		response := helper.APIResponse("Failed Update keluarga", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
+	}
+
+	if inputData.NIKKepalaKeluarga != "" {
+		lastPenduduk, err := h.pendudukService.GetPendudukByNIK(inputData.NIKKepalaKeluarga)
+		if err != nil {
+			response := helper.APIResponse("Failed create keluarga", http.StatusBadRequest, "error", nil)
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
+
+		lastPenduduk.NoKK = newkeluarga.NoKK
+		_, err = h.pendudukService.UpdatePenduduks(lastPenduduk.ID, lastPenduduk)
+		if err != nil {
+			response := helper.APIResponse("Failed create keluarga", http.StatusBadRequest, "error", nil)
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
 	}
 
 	formatter := keluarga.FormatKeluarga(newkeluarga)

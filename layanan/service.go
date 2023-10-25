@@ -39,6 +39,7 @@ func (s *service) CreateLayanan(input CreateLayananInput) (Layanan, error) {
 	Layanan.Code = input.Code
 	Layanan.Name = input.Name
 	Layanan.Type = input.Type
+	Layanan.IsConfirm = input.IsConfirm
 	Layanan.CreatedAt = time.Now()
 
 	newLayanan, err := s.repository.Save(Layanan)
@@ -54,6 +55,7 @@ func (s *service) UpdateLayanan(inputDetail GetLayananDetailInput, input CreateL
 	Layanan.Code = input.Code
 	Layanan.Name = input.Name
 	Layanan.Type = input.Type
+	Layanan.IsConfirm = input.IsConfirm
 	Layanan.UpdatedAt = time.Now()
 
 	newLayanan, err := s.repository.Update(Layanan)

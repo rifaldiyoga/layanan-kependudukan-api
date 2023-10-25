@@ -8,9 +8,11 @@ import (
 
 type Service interface {
 	GetPendudukByID(ID int) (Penduduk, error)
-	GetPenduduks(pagination helper.Pagination) (helper.Pagination, error)
+	GetPendudukByNIK(NIK string) (Penduduk, error)
+	GetPenduduks(pagination helper.Pagination, NIK string) (helper.Pagination, error)
 	CreatePenduduk(input CreatePendudukInput) (Penduduk, error)
 	UpdatePenduduk(ID GetPendudukDetailInput, input CreatePendudukInput) (Penduduk, error)
+	UpdatePenduduks(ID int, input Penduduk) (Penduduk, error)
 	DeletePenduduk(ID GetPendudukDetailInput) error
 }
 
@@ -24,6 +26,12 @@ func NewService(repository *repository) *service {
 
 func (s *service) GetPendudukByID(ID int) (Penduduk, error) {
 	penduduk, err := s.repository.FindByID(ID)
+
+	return penduduk, err
+}
+
+func (s *service) GetPendudukByNIK(ID string) (Penduduk, error) {
+	penduduk, err := s.repository.FindByNIK(ID)
 
 	return penduduk, err
 }
@@ -64,6 +72,8 @@ func (s *service) CreatePenduduk(input CreatePendudukInput) (Penduduk, error) {
 	penduduk.BloodType = input.BloodType
 	penduduk.KelurahanID = input.KelurahanID
 	penduduk.KecamatanID = input.KecamatanID
+	penduduk.NoKK = input.NoKK
+	penduduk.StatusFamily = input.StatusFamily
 	penduduk.CreatedAt = time.Now()
 	penduduk.UpdatedAt = time.Now()
 
@@ -79,6 +89,7 @@ func (s *service) UpdatePenduduk(inputDetail GetPendudukDetailInput, input Creat
 	mariedDate := helper.FormatStringToDate(input.MariedDate)
 	penduduk.ID = inputDetail.ID
 	penduduk.NIK = input.NIK
+	penduduk.NoKK = input.NoKK
 	penduduk.Fullname = input.FullName
 	penduduk.BirthDate = birthDate
 	penduduk.BirthPlace = input.BirthPlace
@@ -95,7 +106,40 @@ func (s *service) UpdatePenduduk(inputDetail GetPendudukDetailInput, input Creat
 	penduduk.BloodType = input.BloodType
 	penduduk.KelurahanID = input.KelurahanID
 	penduduk.KecamatanID = input.KecamatanID
+	penduduk.StatusFamily = input.StatusFamily
 	penduduk.CreatedAt = time.Now()
+	penduduk.UpdatedAt = time.Now()
+
+	newPenduduk, err := s.repository.Update(penduduk)
+	return newPenduduk, err
+}
+
+func (s *service) UpdatePenduduks(inputDetail int, input Penduduk) (Penduduk, error) {
+	penduduk := Penduduk{}
+
+	birthDate := input.BirthDate
+	mariedDate := input.MariedDate
+	penduduk.ID = inputDetail
+	penduduk.NIK = input.NIK
+	penduduk.NoKK = input.NoKK
+	penduduk.Fullname = input.Fullname
+	penduduk.BirthDate = birthDate
+	penduduk.BirthPlace = input.BirthPlace
+	penduduk.JK = input.JK
+	penduduk.ReligionID = input.ReligionID
+	penduduk.Nationality = input.Nationality
+	penduduk.PekerjaanID = input.PekerjaanID
+	penduduk.PendidikanID = input.PendidikanID
+	penduduk.Address = input.Address
+	penduduk.RtID = input.RtID
+	penduduk.RwID = input.RwID
+	penduduk.MariedType = input.MariedType
+	penduduk.MariedDate = mariedDate
+	penduduk.BloodType = input.BloodType
+	penduduk.KelurahanID = input.KelurahanID
+	penduduk.KecamatanID = input.KecamatanID
+	penduduk.CreatedAt = input.CreatedAt
+	penduduk.StatusFamily = input.StatusFamily
 	penduduk.UpdatedAt = time.Now()
 
 	newPenduduk, err := s.repository.Update(penduduk)
@@ -117,8 +161,8 @@ func (s *service) DeletePenduduk(inputDetail GetPendudukDetailInput) error {
 	return nil
 }
 
-func (s *service) GetPenduduks(pagination helper.Pagination) (helper.Pagination, error) {
-	pagination, err := s.repository.FindAll(pagination)
+func (s *service) GetPenduduks(pagination helper.Pagination, NIK string) (helper.Pagination, error) {
+	pagination, err := s.repository.FindAll(pagination, NIK)
 
 	return pagination, err
 }

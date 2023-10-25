@@ -105,12 +105,13 @@ func (h *pendudukHandler) DeletePenduduk(c *gin.Context) {
 }
 
 func (h *pendudukHandler) GetPenduduks(c *gin.Context) {
+	nik := c.Query("no_kk")
 
 	var pagination helper.Pagination
 
 	helper.GetPagingValue(c, &pagination)
 
-	pagination, err := h.pendudukService.GetPenduduks(pagination)
+	pagination, err := h.pendudukService.GetPenduduks(pagination, nik)
 	if err != nil {
 		response := helper.APIResponse("Failed get Penduduk", http.StatusBadRequest, "error", err.Error())
 		c.JSON(http.StatusBadRequest, response)

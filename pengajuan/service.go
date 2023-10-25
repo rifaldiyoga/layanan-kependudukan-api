@@ -8,7 +8,8 @@ import (
 
 type Service interface {
 	GetPengajuanByID(ID int) (Pengajuan, error)
-	GetPengajuans(pagination helper.Pagination, user user.User) (helper.Pagination, error)
+	GetPengajuan(pagination helper.Pagination) (helper.Pagination, error)
+	GetPengajuanUser(pagination helper.Pagination, user user.User) (helper.Pagination, error)
 	CreatePengajuan(input CreatePengajuanInput, user user.User) (Pengajuan, error)
 	UpdatePengajuan(ID GetPengajuanDetailInput, input CreatePengajuanInput, user user.User) (Pengajuan, error)
 	DeletePengajuan(ID GetPengajuanDetailInput) error
@@ -97,8 +98,14 @@ func (s *service) DeletePengajuan(inputDetail GetPengajuanDetailInput) error {
 	return err
 }
 
-func (s *service) GetPengajuans(pagination helper.Pagination, user user.User) (helper.Pagination, error) {
+func (s *service) GetPengajuanUser(pagination helper.Pagination, user user.User) (helper.Pagination, error) {
 	pagination, err := s.repository.FindByUser(pagination, user)
+
+	return pagination, err
+}
+
+func (s *service) GetPengajuan(pagination helper.Pagination) (helper.Pagination, error) {
+	pagination, err := s.repository.FindAll(pagination)
 
 	return pagination, err
 }

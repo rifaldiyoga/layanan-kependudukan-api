@@ -9,6 +9,7 @@ import (
 type Repository interface {
 	FindAll(pagination helper.Pagination) (helper.Pagination, error)
 	FindByID(id int) (Keluarga, error)
+	FindLast() (Keluarga, error)
 	Save(penduduk Keluarga) (Keluarga, error)
 	Update(penduduk Keluarga) (Keluarga, error)
 	Delete(penduduk Keluarga) error
@@ -36,6 +37,16 @@ func (r *repository) FindAll(pagination helper.Pagination) (helper.Pagination, e
 func (r *repository) FindByID(ID int) (Keluarga, error) {
 	var keluargas Keluarga
 	err := r.db.Where("id = ?", ID).First(&keluargas).Error
+	if err != nil {
+		return keluargas, err
+	}
+
+	return keluargas, nil
+}
+
+func (r *repository) FindLast() (Keluarga, error) {
+	var keluargas Keluarga
+	err := r.db.Order("id desc").First(&keluargas).Error
 	if err != nil {
 		return keluargas, err
 	}

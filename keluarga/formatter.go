@@ -1,14 +1,20 @@
 package keluarga
 
+import (
+	"layanan-kependudukan-api/helper"
+)
+
 type KeluargaFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	Keluarga
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
-func FormatKeluarga(keluarga Keluarga) KeluargaFormatter {
+func FormatKeluarga(Keluarga Keluarga) KeluargaFormatter {
 	formatter := KeluargaFormatter{
-		ID: keluarga.ID,
+		Keluarga:  Keluarga,
+		CreatedAt: helper.FormatDateToString(Keluarga.CreatedAt),
+		UpdatedAt: helper.FormatDateToString(Keluarga.UpdatedAt),
 	}
 
 	return formatter

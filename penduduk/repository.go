@@ -8,8 +8,9 @@ import (
 )
 
 type Repository interface {
-	FindAll(pagination helper.Pagination) (helper.Pagination, error)
+	FindAll(pagination helper.Pagination, NIK string) (helper.Pagination, error)
 	FindByID(id int) (Penduduk, error)
+	FindByNIK(id string) (Penduduk, error)
 	FindByDate(date time.Time) (Penduduk, error)
 	Save(penduduk Penduduk) (Penduduk, error)
 	Update(penduduk Penduduk) (Penduduk, error)
@@ -24,10 +25,13 @@ func NewRepsitory(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-func (r *repository) FindAll(pagination helper.Pagination) (helper.Pagination, error) {
+func (r *repository) FindAll(pagination helper.Pagination, NIK string) (helper.Pagination, error) {
 	var penduduks []Penduduk
-
-	err := r.db.Scopes(helper.Paginate(penduduks, &pagination, r.db)).Find(&penduduks).Error
+	data := r.db.Debug()
+	if NIK != "" {
+		data = data.Where("no_kk = ?", NIK)
+	}
+	err := data.Scopes(helper.Paginate(penduduks, &pagination, data)).Find(&penduduks).Error
 	if err != nil {
 		return pagination, err
 	}
@@ -38,6 +42,16 @@ func (r *repository) FindAll(pagination helper.Pagination) (helper.Pagination, e
 func (r *repository) FindByID(ID int) (Penduduk, error) {
 	var penduduks Penduduk
 	err := r.db.Where("id = ?", ID).First(&penduduks).Error
+	if err != nil {
+		return penduduks, err
+	}
+
+	return penduduks, nil
+}
+
+func (r *repository) FindByNIK(ID string) (Penduduk, error) {
+	var penduduks Penduduk
+	err := r.db.Where("nik = ?", ID).First(&penduduks).Error
 	if err != nil {
 		return penduduks, err
 	}

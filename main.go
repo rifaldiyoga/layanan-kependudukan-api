@@ -104,7 +104,7 @@ func main() {
 
 	keluargaRepository := keluarga.NewRepsitory(db)
 	keluargaService := keluarga.NewService(keluargaRepository)
-	keluargaHandler := handler.NewKeluargaHandler(keluargaService, authService)
+	keluargaHandler := handler.NewKeluargaHandler(keluargaService, pendudukService, authService)
 
 	subDistrictRepository := subdistrict.NewRepsitory(db)
 	subDistrictService := subdistrict.NewService(subDistrictRepository)
@@ -204,7 +204,8 @@ func main() {
 	api.GET("/layanans/:ID", authMiddleware(authService, userService), layananHandler.GetLayanan)
 	api.DELETE("/layanans/:ID", authMiddleware(authService, userService), layananHandler.DeleteLayanan)
 
-	api.GET("/pengajuans", authMiddleware(authService, userService), pengajuanHandler.GetPengajuans)
+	api.GET("/pengajuans", authMiddleware(authService, userService), pengajuanHandler.GetPengajuanUser)
+	api.GET("/pengajuans/admin", authMiddleware(authService, userService), pengajuanHandler.GetPengajuanAdmin)
 	api.POST("/pengajuans", authMiddleware(authService, userService), pengajuanHandler.CreatePengajuan)
 	api.POST("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.UpdatePengajuan)
 	api.GET("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.GetPengajuan)
