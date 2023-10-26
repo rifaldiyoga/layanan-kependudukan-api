@@ -17,6 +17,7 @@ import (
 	"layanan-kependudukan-api/position"
 	"layanan-kependudukan-api/province"
 	"layanan-kependudukan-api/religion"
+	"layanan-kependudukan-api/status"
 	"layanan-kependudukan-api/rt"
 	"layanan-kependudukan-api/rw"
 	"layanan-kependudukan-api/subdistrict"
@@ -50,6 +51,10 @@ func main() {
 	religionRepository := religion.NewRepsitory(db)
 	religionService := religion.NewService(religionRepository)
 	religionHandler := handler.NewReligionHandler(religionService, authService)
+
+	statusRepository := status.NewRepsitory(db)
+	statusService := status.NewService(statusRepository)
+	statusHandler := handler.NewStatusHandler(statusService, authService)
 
 	educationRepository := education.NewRepsitory(db)
 	educationService := education.NewService(educationRepository)
@@ -135,6 +140,13 @@ func main() {
 	api.POST("/religions/:ID", authMiddleware(authService, userService), religionHandler.UpdateReligion)
 	api.GET("/religions/:ID", authMiddleware(authService, userService), religionHandler.GetReligion)
 	api.DELETE("/religions/:ID", authMiddleware(authService, userService), religionHandler.DeleteReligion)
+
+	api.GET("/status", authMiddleware(authService, userService), statusHandler.GetStatuss)
+	api.POST("/status", authMiddleware(authService, userService), statusHandler.CreateStatus)
+	api.POST("/status/:ID", authMiddleware(authService, userService), statusHandler.UpdateStatus)
+	api.GET("/status/:ID", authMiddleware(authService, userService), statusHandler.GetStatus)
+	api.DELETE("/status/:ID", authMiddleware(authService, userService), statusHandler.DeleteStatus)
+
 
 	api.GET("/educations", authMiddleware(authService, userService), educationHandler.GetEducations)
 	api.POST("/educations", authMiddleware(authService, userService), educationHandler.CreateEducation)
