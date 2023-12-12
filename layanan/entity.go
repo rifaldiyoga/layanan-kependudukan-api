@@ -8,6 +8,8 @@ type Layanan struct {
 	Name      string
 	Type      string
 	IsConfirm bool
+	IsSign    bool
+	Info      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

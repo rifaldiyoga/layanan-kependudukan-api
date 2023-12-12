@@ -1,16 +1,25 @@
 package kelurahan
 
+import (
+	"layanan-kependudukan-api/helper"
+	"layanan-kependudukan-api/subdistrict"
+)
+
 type KelurahanFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	ID        int                              `json:"id"`
+	Code      string                           `json:"code"`
+	Name      string                           `json:"name"`
+	CreatedAt string                           `json:"created_at"`
+	Kecamatan subdistrict.SubDistrictFormatter `json:"kecamatan" `
 }
 
 func FormatKelurahan(kelurahan Kelurahan) KelurahanFormatter {
 	formatter := KelurahanFormatter{
-		ID:   kelurahan.ID,
-		Code: kelurahan.Code,
-		Name: kelurahan.Name,
+		ID:        kelurahan.ID,
+		Code:      kelurahan.Code,
+		Name:      kelurahan.Name,
+		CreatedAt: helper.FormatDateToString(kelurahan.CreatedAt),
+		Kecamatan: subdistrict.FormatSubDistrict(kelurahan.Kecamatan),
 	}
 
 	return formatter

@@ -5,6 +5,7 @@ import (
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/subdistrict"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -108,7 +109,13 @@ func (h *subdistrictHandler) GetSubDistricts(c *gin.Context) {
 
 	helper.GetPagingValue(c, &pagination)
 
-	pagination, err := h.subdistrictService.GetSubDistricts(pagination)
+	districtId := 0
+	intVar, errConv := strconv.Atoi(c.Query("district_id"))
+	if errConv == nil {
+		districtId = intVar
+	}
+
+	pagination, err := h.subdistrictService.GetSubDistricts(pagination, districtId)
 	if err != nil {
 		response := helper.APIResponse("Failed get subdistrict", http.StatusBadRequest, "error", err.Error())
 		c.JSON(http.StatusBadRequest, response)

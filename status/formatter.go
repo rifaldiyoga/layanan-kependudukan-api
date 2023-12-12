@@ -1,16 +1,20 @@
 package status
 
+import "layanan-kependudukan-api/helper"
+
 type StatusFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	ID        int    `json:"id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
 }
 
 func FormatStatus(status Status) StatusFormatter {
 	formatter := StatusFormatter{
-		ID:   status.ID,
-		Code: status.Code,
-		Name: status.Name,
+		ID:        status.ID,
+		Code:      status.Code,
+		Name:      status.Name,
+		CreatedAt: helper.FormatDateToString(status.CreatedAt),
 	}
 
 	return formatter

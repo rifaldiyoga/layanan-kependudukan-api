@@ -1,7 +1,8 @@
 package pengajuan
 
 import (
-	"layanan-kependudukan-api/detail_pengajuan"
+	"layanan-kependudukan-api/penduduk"
+	"layanan-kependudukan-api/pengajuan_detail"
 	"time"
 )
 
@@ -14,10 +15,13 @@ type Pengajuan struct {
 	Status     string                             `json:"status"`
 	NIK        string                             `json:"nik"`
 	Keterangan string                             `json:"keterangan"`
+	Note       string                             `json:"note"`
+	RefID      int                                `json:"ref_id"`
 	CreatedBy  int                                `json:"created_by"`
 	CreatedAt  time.Time                          `json:"created_at"`
 	UpdatedAt  time.Time                          `json:"updated_at"`
-	Detail     []detail_pengajuan.DetailPengajuan `json:"detail" gorm:"foreignKey:PengajuanID"`
+	Detail     []pengajuan_detail.DetailPengajuan `json:"detail" gorm:"foreignKey:PengajuanID"`
+	Penduduk   penduduk.Penduduk                  `json:"penduduk" gorm:"foreignKey:NIK; references:NIK"`
 }
 
 func (Pengajuan) TableName() string {

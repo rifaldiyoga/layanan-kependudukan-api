@@ -1,16 +1,26 @@
 package rt
 
+import (
+	"layanan-kependudukan-api/helper"
+	"layanan-kependudukan-api/rw"
+)
+
 type RTFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	ID        int            `json:"id"`
+	Code      string         `json:"code"`
+	Name      string         `json:"name"`
+	CreatedAt string         `json:"created_at"`
+	RwID      int            `json:"rw_id"`
+	Rw        rw.RWFormatter `json:"rw" `
 }
 
 func FormatRT(rt RT) RTFormatter {
 	formatter := RTFormatter{
-		ID:   rt.ID,
-		Code: rt.Code,
-		Name: rt.Name,
+		ID:        rt.ID,
+		Code:      rt.Code,
+		Name:      rt.Name,
+		CreatedAt: helper.FormatDateToString(rt.CreatedAt),
+		Rw:        rw.FormatRW(rt.RW),
 	}
 
 	return formatter

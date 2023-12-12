@@ -10,8 +10,11 @@ type Repository interface {
 	FindAll(pagination helper.Pagination) (helper.Pagination, error)
 	Save(user User) (User, error)
 	Update(user User) (User, error)
+	Delete(user User) error
 	FindByEmail(email string) (User, error)
 	FindByID(id int) (User, error)
+	FindByNIK(nik string) (User, error)
+	FindByAdmin() ([]User, error)
 }
 
 type repository struct {
@@ -69,4 +72,33 @@ func (r *repository) FindByID(id int) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *repository) FindByNIK(nik string) (User, error) {
+	var user User
+	err := r.db.Where("nik = ?", nik).Find(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (r *repository) FindByAdmin() ([]User, error) {
+	var user []User
+	err := r.db.Where("role = ?", "ADMIN").Find(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (r *repository) Delete(user User) error {
+	err := r.db.Delete(&user).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

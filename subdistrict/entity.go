@@ -1,11 +1,16 @@
 package subdistrict
 
-import "time"
+import (
+	"layanan-kependudukan-api/district"
+	"time"
+)
 
 type SubDistrict struct {
 	ID        int
 	Code      string
 	Name      string
+	KotaID    int
+	Kota      district.District `json:"kota" gorm:"foreignKey:KotaID;"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

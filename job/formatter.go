@@ -1,16 +1,20 @@
 package job
 
+import "layanan-kependudukan-api/helper"
+
 type JobFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	ID        int    `json:"id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
 }
 
 func FormatJob(job Job) JobFormatter {
 	formatter := JobFormatter{
-		ID:   job.ID,
-		Code: job.Code,
-		Name: job.Name,
+		ID:        job.ID,
+		Code:      job.Code,
+		Name:      job.Name,
+		CreatedAt: helper.FormatDateToString(job.CreatedAt),
 	}
 
 	return formatter

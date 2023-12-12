@@ -9,9 +9,11 @@ import (
 type Service interface {
 	GetKeluargaByID(ID int) (Keluarga, error)
 	GetKeluargas(pagination helper.Pagination) (helper.Pagination, error)
+	GetKeluargaUser(NoKK string) (Keluarga, error)
 	CreateKeluarga(input CreateKeluargaInput) (Keluarga, error)
 	UpdateKeluarga(ID GetKeluargaDetailInput, input CreateKeluargaInput) (Keluarga, error)
 	DeleteKeluarga(ID GetKeluargaDetailInput) error
+	GetCountKeluarga() (int64, error)
 }
 
 type service struct {
@@ -101,4 +103,15 @@ func (s *service) GetKeluargas(pagination helper.Pagination) (helper.Pagination,
 	pagination, err := s.repository.FindAll(pagination)
 
 	return pagination, err
+}
+
+func (s *service) GetKeluargaUser(NoKK string) (Keluarga, error) {
+	keluarga, err := s.repository.FindByNoKK(NoKK)
+
+	return keluarga, err
+}
+
+func (s *service) GetCountKeluarga() (int64, error) {
+	count, err := s.repository.CountAll()
+	return count, err
 }

@@ -5,9 +5,9 @@ type GetArticleDetailInput struct {
 }
 
 type CreateArticleInput struct {
-	Title    string `json:"title" binding:"required"`
-	Author   string `json:"author" binding:"required"`
-	Content  string `json:"content" binding:"required"`
-	ImageUrl string `json:"image_url"`
-	Tag      string `json:"tag" binding:"required"`
+	Title     string `form:"title" binding:"required"`
+	Author    string `form:"author"`
+	Content   string `form:"content" binding:"required"`
+	ImagePath string `form:"image"`
+	Tag       string `form:"tag" binding:"required"`
 }

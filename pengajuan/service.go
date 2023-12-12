@@ -3,16 +3,18 @@ package pengajuan
 import (
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/user"
+	"net/url"
 	"time"
 )
 
 type Service interface {
 	GetPengajuanByID(ID int) (Pengajuan, error)
-	GetPengajuan(pagination helper.Pagination) (helper.Pagination, error)
+	GetPengajuan(pagination helper.Pagination, params url.Values) (helper.Pagination, error)
 	GetPengajuanUser(pagination helper.Pagination, user user.User) (helper.Pagination, error)
 	CreatePengajuan(input CreatePengajuanInput, user user.User) (Pengajuan, error)
 	UpdatePengajuan(ID GetPengajuanDetailInput, input CreatePengajuanInput, user user.User) (Pengajuan, error)
 	DeletePengajuan(ID GetPengajuanDetailInput) error
+	GetCountPengajuan() (int64, error)
 }
 
 type service struct {
@@ -37,16 +39,14 @@ func (s *service) CreatePengajuan(input CreatePengajuanInput, user user.User) (P
 
 	Pengajuan.Keterangan = input.Keterangan
 	Pengajuan.Name = user.Name
+	Pengajuan.Code = input.Code
 	Pengajuan.Layanan = input.Layanan
 	Pengajuan.LayananID = input.LayananID
 	Pengajuan.CreatedBy = user.ID
+	Pengajuan.RefID = input.RefID
 	Pengajuan.CreatedAt = time.Now()
 	Pengajuan.UpdatedAt = time.Now()
-	if input.Status == "" {
-		Pengajuan.Status = "PENDING"
-	} else {
-		Pengajuan.Status = input.Status + "_" + user.Role
-	}
+	Pengajuan.Status = input.Status
 	Pengajuan.NIK = user.Nik
 
 	Pengajuan, err := s.repository.Save(Pengajuan)
@@ -70,21 +70,24 @@ func (s *service) UpdatePengajuan(inputDetail GetPengajuanDetailInput, input Cre
 	Pengajuan.ID = inputDetail.ID
 	Pengajuan.Keterangan = input.Keterangan
 	Pengajuan.Name = lastPengajuan.Name
+
+	Pengajuan.Code = input.Code
 	Pengajuan.Layanan = lastPengajuan.Layanan
 	Pengajuan.LayananID = lastPengajuan.LayananID
+	Pengajuan.RefID = input.RefID
 	Pengajuan.CreatedBy = lastPengajuan.CreatedBy
 	Pengajuan.CreatedAt = lastPengajuan.CreatedAt
 	Pengajuan.UpdatedAt = time.Now()
-	if input.Status == "" {
-		Pengajuan.Status = "PENDING"
-	} else {
-		if user.Role != "PENDUDUK" {
-			Pengajuan.Status = input.Status + "_" + user.Role
-		}
-	}
+	Pengajuan.Status = input.Status
+	Pengajuan.Note = input.Note
 	Pengajuan.NIK = lastPengajuan.NIK
 
+	if input.Status == "VALID" {
+		s.repository.UpdateStatus(lastPengajuan)
+	}
+
 	newPengajuan, err := s.repository.Update(Pengajuan)
+
 	return newPengajuan, err
 }
 
@@ -104,8 +107,13 @@ func (s *service) GetPengajuanUser(pagination helper.Pagination, user user.User)
 	return pagination, err
 }
 
-func (s *service) GetPengajuan(pagination helper.Pagination) (helper.Pagination, error) {
-	pagination, err := s.repository.FindAll(pagination)
+func (s *service) GetPengajuan(pagination helper.Pagination, params url.Values) (helper.Pagination, error) {
+	pagination, err := s.repository.FindAll(pagination, params)
 
 	return pagination, err
+}
+
+func (s *service) GetCountPengajuan() (int64, error) {
+	count, err := s.repository.CountAll()
+	return count, err
 }

@@ -1,16 +1,20 @@
 package education
 
+import "layanan-kependudukan-api/helper"
+
 type EducationFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	ID        int    `json:"id"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
 }
 
 func FormatEducation(education Education) EducationFormatter {
 	formatter := EducationFormatter{
-		ID:   education.ID,
-		Code: education.Code,
-		Name: education.Name,
+		ID:        education.ID,
+		Code:      education.Code,
+		Name:      education.Name,
+		CreatedAt: helper.FormatDateToString(education.CreatedAt),
 	}
 
 	return formatter

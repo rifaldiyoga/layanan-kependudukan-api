@@ -1,63 +1,49 @@
 package penduduk
 
 import (
+	"layanan-kependudukan-api/district"
+	"layanan-kependudukan-api/education"
 	"layanan-kependudukan-api/helper"
-	"time"
+	"layanan-kependudukan-api/job"
+	"layanan-kependudukan-api/kelurahan"
+	"layanan-kependudukan-api/province"
+	"layanan-kependudukan-api/religion"
+	"layanan-kependudukan-api/rt"
+	"layanan-kependudukan-api/rw"
+	"layanan-kependudukan-api/subdistrict"
 )
 
 type PendudukFormatter struct {
-	ID            int       `json:"id"`
-	NIK           string    `json:"nik"`
-	NoKK          string    `json:"no_kk"`
-	Fullname      string    `json:"fullname"`
-	BirthPlace    string    `json:"birth_place"`
-	BirthDate     time.Time `json:"birth_date"`
-	ReligionID    int       `json:"religion_id"`
-	PendidikanID  int       `json:"education_id"`
-	PekerjaanID   int       `json:"job_id"`
-	Nationality   string    `json:"nationality"`
-	MariedType    string    `json:"maried_type"`
-	MariedDate    time.Time `json:"maried_date"`
-	BloodType     string    `json:"blood_type"`
-	Address       string    `json:"address"`
-	RtID          int       `json:"rt_id"`
-	RwID          int       `json:"rw_id"`
-	KelurahanID   int       `json:"kelurahan_id"`
-	SubDistrictID int       `json:"subdistrict_id"`
-	DistictID     int       `json:"district_id"`
-	ProvinceID    int       `json:"province_id"`
-	JK            string    `json:"jk"`
-	StatusFamily  string    `json:"status_family"`
-	CreatedAt     string    `json:"created_at"`
-	UpdatedAt     string    `json:"updated_at"`
+	Penduduk
+	BirthDate   string                           `json:"birth_date"`
+	CreatedAt   string                           `json:"created_at"`
+	UpdatedAt   string                           `json:"updated_at"`
+	Religion    religion.ReligionFormatter       `json:"religion"`
+	Education   education.EducationFormatter     `json:"education"`
+	Job         job.JobFormatter                 `json:"job"`
+	RT          rt.RTFormatter                   `json:"rt"`
+	RW          rw.RWFormatter                   `json:"rw"`
+	Keluarhan   kelurahan.KelurahanFormatter     `json:"kelurahan"`
+	SubDistrict subdistrict.SubDistrictFormatter `json:"kecamatan"`
+	District    district.DistrictFormatter       `json:"kota"`
+	Provinsi    province.ProvinceFormatter       `json:"provinsi"`
 }
 
 func FormatPenduduk(penduduk Penduduk) PendudukFormatter {
 	formatter := PendudukFormatter{
-		ID:            penduduk.ID,
-		NIK:           penduduk.NIK,
-		Fullname:      penduduk.Fullname,
-		BirthPlace:    penduduk.BirthPlace,
-		BirthDate:     penduduk.BirthDate,
-		ReligionID:    penduduk.ReligionID,
-		PekerjaanID:   penduduk.PekerjaanID,
-		PendidikanID:  penduduk.PendidikanID,
-		Nationality:   penduduk.Nationality,
-		MariedType:    penduduk.MariedType,
-		MariedDate:    penduduk.MariedDate,
-		BloodType:     penduduk.BloodType,
-		Address:       penduduk.Address,
-		RtID:          penduduk.RtID,
-		RwID:          penduduk.RwID,
-		KelurahanID:   penduduk.KelurahanID,
-		SubDistrictID: penduduk.KecamatanID,
-		DistictID:     penduduk.KotaID,
-		ProvinceID:    penduduk.ProvinsiID,
-		JK:            penduduk.JK,
-		NoKK:          penduduk.NoKK,
-		StatusFamily:  penduduk.StatusFamily,
-		CreatedAt:     helper.FormatDateToString(penduduk.CreatedAt),
-		UpdatedAt:     helper.FormatDateToString(penduduk.UpdatedAt),
+		Penduduk:    penduduk,
+		Religion:    religion.FormatReligion(penduduk.Religion),
+		Education:   education.FormatEducation(penduduk.Education),
+		Job:         job.FormatJob(penduduk.Job),
+		RT:          rt.FormatRT(penduduk.RT),
+		RW:          rw.FormatRW(penduduk.RW),
+		Keluarhan:   kelurahan.FormatKelurahan(penduduk.Kelurahan),
+		SubDistrict: subdistrict.FormatSubDistrict(penduduk.Kecamatan),
+		District:    district.FormatDistrict(penduduk.Kota),
+		Provinsi:    province.FormatProvince(penduduk.Provinsi),
+		BirthDate:   helper.FormatDateToString(penduduk.BirthDate),
+		CreatedAt:   helper.FormatDateToString(penduduk.CreatedAt),
+		UpdatedAt:   helper.FormatDateToString(penduduk.UpdatedAt),
 	}
 
 	return formatter

@@ -7,6 +7,7 @@ import (
 
 type Service interface {
 	GetLayananByID(ID int) (Layanan, error)
+	GetLayananByCode(code string) (Layanan, error)
 	GetLayanansPaging(pagination helper.Pagination) (helper.Pagination, error)
 	GetLayanans() ([]Layanan, error)
 	GetRekomLayanans() ([]Layanan, error)
@@ -33,6 +34,15 @@ func (s *service) GetLayananByID(ID int) (Layanan, error) {
 	return Layanan, nil
 }
 
+func (s *service) GetLayananByCode(Code string) (Layanan, error) {
+	Layanan, err := s.repository.FindByCode(Code)
+	if err != nil {
+		return Layanan, err
+	}
+
+	return Layanan, nil
+}
+
 func (s *service) CreateLayanan(input CreateLayananInput) (Layanan, error) {
 	Layanan := Layanan{}
 
@@ -40,6 +50,8 @@ func (s *service) CreateLayanan(input CreateLayananInput) (Layanan, error) {
 	Layanan.Name = input.Name
 	Layanan.Type = input.Type
 	Layanan.IsConfirm = input.IsConfirm
+	Layanan.IsSign = input.IsSign
+	Layanan.Info = input.Info
 	Layanan.CreatedAt = time.Now()
 
 	newLayanan, err := s.repository.Save(Layanan)
@@ -56,6 +68,8 @@ func (s *service) UpdateLayanan(inputDetail GetLayananDetailInput, input CreateL
 	Layanan.Name = input.Name
 	Layanan.Type = input.Type
 	Layanan.IsConfirm = input.IsConfirm
+	Layanan.IsSign = input.IsSign
+	Layanan.Info = input.Info
 	Layanan.UpdatedAt = time.Now()
 
 	newLayanan, err := s.repository.Update(Layanan)

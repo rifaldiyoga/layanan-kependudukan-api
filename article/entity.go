@@ -7,7 +7,7 @@ type Article struct {
 	Title     string
 	Author    string
 	Content   string
-	ImageUrl  string
+	ImagePath string
 	Tag       string
 	CreatedAt time.Time
 }

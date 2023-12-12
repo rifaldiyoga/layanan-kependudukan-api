@@ -4,10 +4,11 @@ import (
 	"layanan-kependudukan-api/helper"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository interface {
-	FindAll(pagination helper.Pagination) (helper.Pagination, error)
+	FindAll(pagination helper.Pagination, distritId int) (helper.Pagination, error)
 	FindByID(id int) (SubDistrict, error)
 	Save(subDistrict SubDistrict) (SubDistrict, error)
 	Update(subDistrict SubDistrict) (SubDistrict, error)
@@ -22,10 +23,14 @@ func NewRepsitory(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-func (r *repository) FindAll(pagination helper.Pagination) (helper.Pagination, error) {
+func (r *repository) FindAll(pagination helper.Pagination, districtId int) (helper.Pagination, error) {
 	var subDistricts []SubDistrict
 
-	err := r.db.Scopes(helper.Paginate(subDistricts, &pagination, r.db)).Find(&subDistricts).Error
+	db := r.db
+	if districtId > 0 {
+		db = db.Where("kota_id = ?", districtId)
+	}
+	err := db.Preload(clause.Associations).Scopes(helper.Paginate(subDistricts, &pagination, r.db)).Find(&subDistricts).Error
 	if err != nil {
 		return pagination, err
 	}

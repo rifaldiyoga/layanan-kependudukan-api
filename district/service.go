@@ -7,7 +7,7 @@ import (
 
 type Service interface {
 	GetDistrictByID(ID int) (District, error)
-	GetDistricts(pagination helper.Pagination) (helper.Pagination, error)
+	GetDistricts(pagination helper.Pagination, provinceId int) (helper.Pagination, error)
 	CreateDistrict(input CreateDistrictInput) (District, error)
 	UpdateDistrict(ID GetDistrictDetailInput, input CreateDistrictInput) (District, error)
 	DeleteDistrict(ID GetDistrictDetailInput) error
@@ -65,7 +65,7 @@ func (s *service) DeleteDistrict(inputDetail GetDistrictDetailInput) error {
 	return err
 }
 
-func (s *service) GetDistricts(pagination helper.Pagination) (helper.Pagination, error) {
-	pagination, err := s.repository.FindAll(pagination)
+func (s *service) GetDistricts(pagination helper.Pagination, provinceId int) (helper.Pagination, error) {
+	pagination, err := s.repository.FindAll(pagination, provinceId)
 	return pagination, err
 }

@@ -12,6 +12,7 @@ type Repository interface {
 	FindRecom() ([]Layanan, error)
 	FindByType() ([]string, error)
 	FindByID(id int) (Layanan, error)
+	FindByCode(code string) (Layanan, error)
 	Save(layanan Layanan) (Layanan, error)
 	Update(layanan Layanan) (Layanan, error)
 	Delete(layanan Layanan) error
@@ -50,7 +51,7 @@ func (r *repository) FindAll() ([]Layanan, error) {
 func (r *repository) FindRecom() ([]Layanan, error) {
 	var Layanans []Layanan
 
-	err := r.db.Find(&Layanans).Limit(10).Error
+	err := r.db.Find(&Layanans).Limit(8).Error
 	if err != nil {
 		return nil, err
 	}
@@ -72,6 +73,16 @@ func (r *repository) FindByType() ([]string, error) {
 func (r *repository) FindByID(ID int) (Layanan, error) {
 	var Layanan Layanan
 	err := r.db.Where("id = ?", ID).First(&Layanan).Error
+	if err != nil {
+		return Layanan, err
+	}
+
+	return Layanan, nil
+}
+
+func (r *repository) FindByCode(code string) (Layanan, error) {
+	var Layanan Layanan
+	err := r.db.Where("code = ?", code).First(&Layanan).Error
 	if err != nil {
 		return Layanan, err
 	}

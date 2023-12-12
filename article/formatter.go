@@ -7,7 +7,7 @@ type ArticleFormatter struct {
 	Title     string `json:"title"`
 	Author    string `json:"author"`
 	Content   string `json:"content"`
-	ImageUrl  string `json:"image_url"`
+	ImageUrl  string `json:"image_path"`
 	Tag       string `json:"tag"`
 	CreatedAt string `json:"created_at"`
 }
@@ -18,7 +18,7 @@ func FormatArticle(article Article) ArticleFormatter {
 		Title:     article.Title,
 		Author:    article.Author,
 		Content:   article.Content,
-		ImageUrl:  article.ImageUrl,
+		ImageUrl:  article.ImagePath,
 		Tag:       article.Tag,
 		CreatedAt: helper.FormatDateToString(article.CreatedAt),
 	}

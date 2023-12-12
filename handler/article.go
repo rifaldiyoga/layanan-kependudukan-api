@@ -5,7 +5,9 @@ import (
 	"layanan-kependudukan-api/article"
 	"layanan-kependudukan-api/auth"
 	"layanan-kependudukan-api/helper"
+	"layanan-kependudukan-api/user"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +24,10 @@ func NewArticleHandler(articleService article.Service, authService auth.Service)
 func (h *articleHandler) CreateArticle(c *gin.Context) {
 	var input article.CreateArticleInput
 
-	err := c.ShouldBindJSON(&input)
+	currentUser, _ := c.Get("currentUser")
+	userObject := currentUser.(user.User)
+
+	err := c.ShouldBind(&input)
 	if err != nil {
 		fmt.Print(input)
 		errors := helper.FormatValidationError(err)
@@ -32,7 +37,26 @@ func (h *articleHandler) CreateArticle(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
+	file, err := c.FormFile("image")
+	if err != nil {
+		fmt.Print(err.Error())
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
 
+		response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	path := helper.FormatFileName(file.Filename)
+	filePath := filepath.Join("images/articles", path)
+	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	input.ImagePath = filePath
+	input.Author = userObject.Name
 	newarticle, err := h.articleService.CreateArticle(input)
 	if err != nil {
 		response := helper.APIResponse("Failed create article", http.StatusBadRequest, "error", nil)

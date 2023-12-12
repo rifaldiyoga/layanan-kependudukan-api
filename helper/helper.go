@@ -1,9 +1,16 @@
 package helper
 
 import (
+	"context"
 	"fmt"
+	"log"
+
+	"strconv"
+	"strings"
 	"time"
 
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -89,6 +96,7 @@ func GetType(Type string) string {
 		"LP":  "Layanan Pindah",
 		"LN":  "Layanan Nikah",
 		"LKK": "Layanan Kematian & Kelahiran",
+		"LT":  "Layanan Pertanahan",
 	}
 	return myMap[Type]
 }
@@ -101,4 +109,59 @@ func GenerateNIK(date time.Time, count int) string {
 func GenerateNoKK(count int) string {
 	counter := fmt.Sprintf("%04d", count)
 	return "357901" + time.Now().Format("020106") + counter
+}
+
+func GenerateKodeSurat(codeLayanan string, lastCode string) string {
+	count := 0
+	if lastCode != "" {
+		split := strings.Split(lastCode, "/")[1]
+		num, err := strconv.Atoi(split)
+
+		if err != nil {
+			fmt.Println("Conversion error:", err)
+			return ""
+		}
+		count = num
+
+	}
+	count = count + 1
+	counter := fmt.Sprintf("%03d", count)
+	return codeLayanan + "/" + counter + "/422.310.2/" + time.Now().Format("2006")
+}
+
+func FormatFileName(filename string) string {
+	// Convert the string to lowercase
+	processed := strings.ToLower(filename)
+
+	// Replace spaces with underscores
+	processed = strings.ReplaceAll(processed, " ", "_")
+
+	return processed
+}
+
+func SendNotification(app *firebase.App, token string, title string, body string) {
+	if token != "" {
+		ctx := context.Background()
+		client, err := app.Messaging(ctx)
+		if err != nil {
+			log.Fatalf("error getting Messaging client: %v\n", err)
+		}
+
+		registrationToken := token
+
+		message := &messaging.Message{
+			Notification: &messaging.Notification{
+				Title: title,
+				Body:  body,
+			},
+			Token: registrationToken,
+		}
+
+		response, err := client.Send(ctx, message)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Println("Successfully sent message:", response)
+	}
+
 }

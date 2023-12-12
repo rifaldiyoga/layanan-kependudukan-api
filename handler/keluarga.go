@@ -5,6 +5,7 @@ import (
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/keluarga"
 	"layanan-kependudukan-api/penduduk"
+	"layanan-kependudukan-api/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -154,6 +155,25 @@ func (h *keluargaHandler) GetKeluargas(c *gin.Context) {
 	pagination.Data = keluarga.FormatKeluargas(Keluargas)
 
 	response := helper.APIResponse("Success get Keluarga", http.StatusOK, "success", pagination)
+	c.JSON(http.StatusOK, response)
+
+}
+
+func (h *keluargaHandler) GetKeluargaByUser(c *gin.Context) {
+	currentUser, _ := c.Get("currentUser")
+	userObject := currentUser.(user.User)
+
+	penduduk, _ := h.pendudukService.GetPendudukByNIK(userObject.Nik)
+
+	keluargaUser, err := h.keluargaService.GetKeluargaUser(penduduk.NoKK)
+	if err != nil {
+		response := helper.APIResponse("Failed get Keluarga", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := keluarga.FormatKeluarga(keluargaUser)
+	response := helper.APIResponse("Success Get Keluarga", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 
 }

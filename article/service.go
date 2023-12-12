@@ -36,7 +36,7 @@ func (s *service) CreateArticle(input CreateArticleInput) (Article, error) {
 	Article.Title = input.Title
 	Article.Content = input.Content
 	Article.Tag = input.Tag
-	Article.ImageUrl = input.ImageUrl
+	Article.ImagePath = input.ImagePath
 	Article.Author = input.Author
 	Article.CreatedAt = time.Now()
 
@@ -53,7 +53,7 @@ func (s *service) UpdateArticle(inputDetail GetArticleDetailInput, input CreateA
 	Article.Title = input.Title
 	Article.Content = input.Content
 	Article.Tag = input.Tag
-	Article.ImageUrl = input.ImageUrl
+	Article.ImagePath = input.ImagePath
 	Article.Author = input.Author
 
 	newArticle, err := s.repository.Update(Article)

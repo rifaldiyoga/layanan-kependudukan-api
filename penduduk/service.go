@@ -9,11 +9,15 @@ import (
 type Service interface {
 	GetPendudukByID(ID int) (Penduduk, error)
 	GetPendudukByNIK(NIK string) (Penduduk, error)
+	GetPendudukByNoKK(NIK string) ([]Penduduk, error)
 	GetPenduduks(pagination helper.Pagination, NIK string) (helper.Pagination, error)
+	GetRTByPengaju(RtID int, RwID int) (Penduduk, error)
+	GetRWByPengaju(RwID int) (Penduduk, error)
 	CreatePenduduk(input CreatePendudukInput) (Penduduk, error)
 	UpdatePenduduk(ID GetPendudukDetailInput, input CreatePendudukInput) (Penduduk, error)
 	UpdatePenduduks(ID int, input Penduduk) (Penduduk, error)
 	DeletePenduduk(ID GetPendudukDetailInput) error
+	GetCountPenduduk() (int64, error)
 }
 
 type service struct {
@@ -32,6 +36,24 @@ func (s *service) GetPendudukByID(ID int) (Penduduk, error) {
 
 func (s *service) GetPendudukByNIK(ID string) (Penduduk, error) {
 	penduduk, err := s.repository.FindByNIK(ID)
+
+	return penduduk, err
+}
+
+func (s *service) GetPendudukByNoKK(ID string) ([]Penduduk, error) {
+	penduduk, err := s.repository.FindByNoKK(ID)
+
+	return penduduk, err
+}
+
+func (s *service) GetRTByPengaju(RtID int, RwID int) (Penduduk, error) {
+	penduduk, err := s.repository.FindByRT(RtID, RwID)
+
+	return penduduk, err
+}
+
+func (s *service) GetRWByPengaju(RwID int) (Penduduk, error) {
+	penduduk, err := s.repository.FindByRW(RwID)
 
 	return penduduk, err
 }
@@ -165,4 +187,9 @@ func (s *service) GetPenduduks(pagination helper.Pagination, NIK string) (helper
 	pagination, err := s.repository.FindAll(pagination, NIK)
 
 	return pagination, err
+}
+
+func (s *service) GetCountPenduduk() (int64, error) {
+	count, err := s.repository.CountAll()
+	return count, err
 }

@@ -4,6 +4,7 @@ import (
 	"layanan-kependudukan-api/helper"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository interface {
@@ -25,7 +26,7 @@ func NewRepsitory(db *gorm.DB) *repository {
 func (r *repository) FindAll(pagination helper.Pagination) (helper.Pagination, error) {
 	var rts []RT
 
-	err := r.db.Scopes(helper.Paginate(rts, &pagination, r.db)).Find(&rts).Error
+	err := r.db.Preload(clause.Associations).Scopes(helper.Paginate(rts, &pagination, r.db)).Find(&rts).Error
 	if err != nil {
 		return pagination, err
 	}

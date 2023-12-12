@@ -6,6 +6,7 @@ import (
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/user"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -96,6 +97,26 @@ func (h *userHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *userHandler) Logout(c *gin.Context) {
+
+	userObject, _ := c.Get("currentUser")
+	currentUser := userObject.(user.User)
+
+	loggedInUser, err := h.userService.Logout(currentUser)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		response := helper.APIResponse("Login Failed!", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	formatter := user.FormatUser(loggedInUser, "")
+
+	response := helper.APIResponse("Logout Successful", http.StatusOK, "success", formatter)
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (h *userHandler) CheckEmailAvailablity(c *gin.Context) {
 	var input user.EmailInput
 
@@ -147,7 +168,6 @@ func (h *userHandler) GetUsers(c *gin.Context) {
 
 	response := helper.APIResponse("Success get user", http.StatusOK, "success", pagination)
 	c.JSON(http.StatusOK, response)
-
 }
 
 func (h *userHandler) GetUser(c *gin.Context) {
@@ -178,7 +198,7 @@ func (h *userHandler) GetUser(c *gin.Context) {
 func (h *userHandler) CreateUser(c *gin.Context) {
 	var input user.CreateUserInput
 
-	err := c.ShouldBindJSON(&input)
+	err := c.ShouldBind(&input)
 	if err != nil {
 		fmt.Print(err.Error())
 		errors := helper.FormatValidationError(err)
@@ -189,6 +209,25 @@ func (h *userHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		fmt.Print(err.Error())
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	path := fmt.Sprintf("%s-%s", input.Name, helper.FormatFileName(file.Filename))
+	filePath := filepath.Join("images/avatars", path)
+	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	input.AvatarPath = filePath
 	newuser, err := h.userService.RegiserUser(input)
 	if err != nil {
 		response := helper.APIResponse("Failed create user", http.StatusBadRequest, "error", nil)
@@ -216,7 +255,7 @@ func (h *userHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	err := c.ShouldBindJSON(&inputData)
+	err := c.ShouldBind(&inputData)
 	if err != nil {
 		errors := helper.FormatValidationError(err)
 		errorMessage := gin.H{"errors": errors}
@@ -225,6 +264,26 @@ func (h *userHandler) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
+
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		fmt.Print(err.Error())
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	path := fmt.Sprintf("%s-%s", inputData.Name, helper.FormatFileName(file.Filename))
+	filePath := filepath.Join("images/avatars", path)
+	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	inputData.AvatarPath = filePath
 
 	newuser, err := h.userService.UpdateUser(inputID, inputData)
 	if err != nil {
@@ -235,5 +294,28 @@ func (h *userHandler) UpdateUser(c *gin.Context) {
 
 	formatter := user.FormatUser(newuser, "")
 	response := helper.APIResponse("Success Update user", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) DeleteUser(c *gin.Context) {
+	var inputID user.GetUserDetailInput
+
+	errUri := c.ShouldBindUri(&inputID)
+	if errUri != nil {
+		errors := helper.FormatValidationError(errUri)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed Delete user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	err := h.userService.DeleteUser(inputID.ID)
+	if err != nil {
+		response := helper.APIResponse("Failed Delete user", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := helper.APIResponse("Success Delete user", http.StatusOK, "success", nil)
 	c.JSON(http.StatusOK, response)
 }

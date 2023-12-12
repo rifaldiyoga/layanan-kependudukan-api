@@ -22,7 +22,7 @@ func FormatUser(user User, token string) UserFormatter {
 		Nik:        user.Nik,
 		Token:      token,
 		Role:       user.Role,
-		AvatarPath: user.AvatarFileName,
+		AvatarPath: user.AvatarPath,
 		CreatedAt:  helper.FormatDateToString(user.CreatedAt),
 		UpdatedAt:  helper.FormatDateToString(user.UpdatedAt),
 	}

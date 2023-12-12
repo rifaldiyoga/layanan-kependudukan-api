@@ -1,31 +1,56 @@
 package main
 
 import (
+	"context"
 	"layanan-kependudukan-api/article"
 	"layanan-kependudukan-api/auth"
-	detailPengajuan "layanan-kependudukan-api/detail_pengajuan"
+	belumMenikah "layanan-kependudukan-api/belum_menikah"
+	"layanan-kependudukan-api/berpergian"
+	berpergianDetail "layanan-kependudukan-api/berpergian_detail"
 	"layanan-kependudukan-api/district"
+	"layanan-kependudukan-api/domisili"
 	"layanan-kependudukan-api/education"
 	"layanan-kependudukan-api/handler"
 	"layanan-kependudukan-api/helper"
+	"layanan-kependudukan-api/janda"
 	"layanan-kependudukan-api/job"
+	"layanan-kependudukan-api/kelahiran"
 	"layanan-kependudukan-api/keluarga"
 	"layanan-kependudukan-api/kelurahan"
+	"layanan-kependudukan-api/kematian"
+	"layanan-kependudukan-api/kepolisian"
+	"layanan-kependudukan-api/keramaian"
 	"layanan-kependudukan-api/layanan"
 	"layanan-kependudukan-api/penduduk"
 	"layanan-kependudukan-api/pengajuan"
+	pengajuanDetail "layanan-kependudukan-api/pengajuan_detail"
+	"layanan-kependudukan-api/penghasilan"
+	pernahMenikah "layanan-kependudukan-api/pernah_menikah"
+	"layanan-kependudukan-api/pindah"
+	pindahDetail "layanan-kependudukan-api/pindah_detail"
 	"layanan-kependudukan-api/position"
 	"layanan-kependudukan-api/province"
 	"layanan-kependudukan-api/religion"
-	"layanan-kependudukan-api/status"
 	"layanan-kependudukan-api/rt"
+	"layanan-kependudukan-api/rumah"
 	"layanan-kependudukan-api/rw"
+	"layanan-kependudukan-api/sktm"
+	"layanan-kependudukan-api/sku"
+	"layanan-kependudukan-api/sporadik"
+	"layanan-kependudukan-api/status"
 	"layanan-kependudukan-api/subdistrict"
+	"layanan-kependudukan-api/tanah"
 	"layanan-kependudukan-api/user"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
+
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/messaging"
+
+	"google.golang.org/api/option"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/cors"
@@ -41,6 +66,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
+	app, _, _ := SetupFirebase()
 
 	authService := auth.NewService()
 
@@ -96,12 +123,8 @@ func main() {
 	districtService := district.NewService(districtRepository)
 	districtHandler := handler.NewDistrictHandler(districtService, authService)
 
-	detailPengajuanRepository := detailPengajuan.NewRepsitory(db)
-	detailPengajuanService := detailPengajuan.NewService(detailPengajuanRepository)
-
-	pengajuanRepository := pengajuan.NewRepsitory(db)
-	pengajuanService := pengajuan.NewService(pengajuanRepository)
-	pengajuanHandler := handler.NewpengajuanHandler(pengajuanService, detailPengajuanService, authService)
+	detailPengajuanRepository := pengajuanDetail.NewRepsitory(db)
+	detailPengajuanService := pengajuanDetail.NewService(detailPengajuanRepository)
 
 	pendudukRepository := penduduk.NewRepsitory(db)
 	pendudukService := penduduk.NewService(pendudukRepository)
@@ -115,6 +138,84 @@ func main() {
 	subDistrictService := subdistrict.NewService(subDistrictRepository)
 	subDistrictHandler := handler.NewSubDistrictHandler(subDistrictService, authService)
 
+	pengajuanRepository := pengajuan.NewRepsitory(db)
+	pengajuanService := pengajuan.NewService(pengajuanRepository)
+	pengajuanHandler := handler.NewPengajuanHandler(app, pengajuanService, detailPengajuanService, layananService, userService, pendudukService, authService)
+
+	dashboardHandler := handler.NewDashboardHandler(pengajuanService, pendudukService, keluargaService, authService)
+
+	sktmRepository := sktm.NewRepsitory(db)
+	sktmService := sktm.NewService(sktmRepository)
+	sktmHandler := handler.NewSKTMHandler(sktmService, layananService, *pengajuanHandler, authService)
+
+	skuRepository := sku.NewRepsitory(db)
+	skuService := sku.NewService(skuRepository)
+	skuHandler := handler.NewSKUHandler(skuService, layananService, *pengajuanHandler, authService)
+
+	domisiliRepository := domisili.NewRepsitory(db)
+	domisiliService := domisili.NewService(domisiliRepository)
+	domisiliHandler := handler.NewDomisiliHandler(domisiliService, layananService, *pengajuanHandler, authService)
+
+	keramaianRepository := keramaian.NewRepsitory(db)
+	keramaianService := keramaian.NewService(keramaianRepository)
+	keramaianHandler := handler.NewKeramaianHandler(keramaianService, layananService, *pengajuanHandler, authService)
+
+	kelahiranRepository := kelahiran.NewRepsitory(db)
+	kelahiranService := kelahiran.NewService(kelahiranRepository)
+	kelahiranHandler := handler.NewKelahiranHandler(kelahiranService, layananService, *pengajuanHandler, authService)
+
+	kematianRepository := kematian.NewRepsitory(db)
+	kematianService := kematian.NewService(kematianRepository)
+	kematianHandler := handler.NewKematianHandler(kematianService, layananService, *pengajuanHandler, authService)
+
+	berpergianDetailRepository := berpergianDetail.NewRepsitory(db)
+	berpergianDetailService := berpergianDetail.NewService(berpergianDetailRepository)
+	berpergianDetailHandler := handler.NewBerpergianDetailHandler(berpergianDetailService, authService)
+
+	berpergianRepository := berpergian.NewRepsitory(db)
+	berpergianService := berpergian.NewService(berpergianRepository)
+	berpergianHandler := handler.NewBerpergianHandler(berpergianService, layananService, *pengajuanHandler, authService)
+
+	pindahDetailRepository := pindahDetail.NewRepsitory(db)
+	pindahDetailService := pindahDetail.NewService(pindahDetailRepository)
+	pindahDetailHandler := handler.NewPindahDetailHandler(pindahDetailService, authService)
+
+	pindahRepository := pindah.NewRepsitory(db)
+	pindahService := pindah.NewService(pindahRepository)
+	pindahHandler := handler.NewPindahHandler(pindahService, layananService, *pengajuanHandler, pindahDetailService, authService)
+
+	jandaRepository := janda.NewRepsitory(db)
+	jandaService := janda.NewService(jandaRepository)
+	jandaHandler := handler.NewJandaHandler(jandaService, layananService, *pengajuanHandler, authService)
+
+	penghasilanRepository := penghasilan.NewRepsitory(db)
+	penghasilanService := penghasilan.NewService(penghasilanRepository)
+	penghasilanHandler := handler.NewPenghasilanHandler(penghasilanService, layananService, *pengajuanHandler, authService)
+
+	belumMenikahRepository := belumMenikah.NewRepsitory(db)
+	belumMenikahService := belumMenikah.NewService(belumMenikahRepository)
+	belumMenikahHandler := handler.NewBelumMenikahHandler(belumMenikahService, layananService, *pengajuanHandler, authService)
+
+	pernahMenikahRepository := pernahMenikah.NewRepsitory(db)
+	pernahMenikahService := pernahMenikah.NewService(pernahMenikahRepository)
+	pernahMenikahHandler := handler.NewPernahMenikahHandler(pernahMenikahService, pendudukService, layananService, *pengajuanHandler, authService)
+
+	kepolisianRepository := kepolisian.NewRepsitory(db)
+	kepolisianService := kepolisian.NewService(kepolisianRepository)
+	kepolisianHandler := handler.NewKepolisianHandler(kepolisianService, layananService, *pengajuanHandler, authService)
+
+	rumahRepository := rumah.NewRepsitory(db)
+	rumahService := rumah.NewService(rumahRepository)
+	rumahHandler := handler.NewRumahHandler(rumahService, layananService, *pengajuanHandler, authService)
+
+	tanahRepository := tanah.NewRepsitory(db)
+	tanahService := tanah.NewService(tanahRepository)
+	tanahHandler := handler.NewTanahHandler(tanahService, layananService, *pengajuanHandler, authService)
+
+	sporadikRepository := sporadik.NewRepsitory(db)
+	sporadikService := sporadik.NewService(sporadikRepository)
+	sporadikHandler := handler.NewSporadikHandler(sporadikService, layananService, *pengajuanHandler, authService)
+
 	router := gin.Default()
 
 	corsMiddleware := cors.New(cors.Config{
@@ -125,15 +226,19 @@ func main() {
 		AllowAllOrigins:  true,
 	})
 	router.Use(corsMiddleware)
+	router.Static("/images", "./images")
+	router.Static("/documents", "./documents")
 	api := router.Group("/api/v1")
 
 	api.POST("/register", userHandler.RegiserUser)
 	api.POST("/login", userHandler.Login)
+	api.POST("/logout", authMiddleware(authService, userService), userHandler.Logout)
 	api.POST("/email_checkers", authMiddleware(authService, userService), userHandler.CheckEmailAvailablity)
 	api.POST("/users", authMiddleware(authService, userService), userHandler.CreateUser)
 	api.POST("/users/:ID", authMiddleware(authService, userService), userHandler.UpdateUser)
 	api.GET("/users", authMiddleware(authService, userService), userHandler.GetUsers)
 	api.GET("/users/:ID", authMiddleware(authService, userService), userHandler.GetUser)
+	api.DELETE("/users/:ID", authMiddleware(authService, userService), userHandler.DeleteUser)
 
 	api.GET("/religions", authMiddleware(authService, userService), religionHandler.GetReligions)
 	api.POST("/religions", authMiddleware(authService, userService), religionHandler.CreateReligion)
@@ -146,7 +251,6 @@ func main() {
 	api.POST("/status/:ID", authMiddleware(authService, userService), statusHandler.UpdateStatus)
 	api.GET("/status/:ID", authMiddleware(authService, userService), statusHandler.GetStatus)
 	api.DELETE("/status/:ID", authMiddleware(authService, userService), statusHandler.DeleteStatus)
-
 
 	api.GET("/educations", authMiddleware(authService, userService), educationHandler.GetEducations)
 	api.POST("/educations", authMiddleware(authService, userService), educationHandler.CreateEducation)
@@ -216,24 +320,127 @@ func main() {
 	api.GET("/layanans/:ID", authMiddleware(authService, userService), layananHandler.GetLayanan)
 	api.DELETE("/layanans/:ID", authMiddleware(authService, userService), layananHandler.DeleteLayanan)
 
-	api.GET("/pengajuans", authMiddleware(authService, userService), pengajuanHandler.GetPengajuanUser)
-	api.GET("/pengajuans/admin", authMiddleware(authService, userService), pengajuanHandler.GetPengajuanAdmin)
-	api.POST("/pengajuans", authMiddleware(authService, userService), pengajuanHandler.CreatePengajuan)
-	api.POST("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.UpdatePengajuan)
-	api.GET("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.GetPengajuan)
-	api.DELETE("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.DeletePengajuan)
-
 	api.GET("/penduduks", authMiddleware(authService, userService), pendudukHandler.GetPenduduks)
 	api.POST("/penduduks", authMiddleware(authService, userService), pendudukHandler.CreatePenduduk)
 	api.POST("/penduduks/:ID", authMiddleware(authService, userService), pendudukHandler.UpdatePenduduk)
 	api.GET("/penduduks/:ID", authMiddleware(authService, userService), pendudukHandler.GetPenduduk)
 	api.DELETE("/penduduks/:ID", authMiddleware(authService, userService), pendudukHandler.DeletePenduduk)
 
+	api.GET("/dashboards", authMiddleware(authService, userService), dashboardHandler.GetDashboard)
+
 	api.GET("/keluargas", authMiddleware(authService, userService), keluargaHandler.GetKeluargas)
 	api.POST("/keluargas", authMiddleware(authService, userService), keluargaHandler.CreateKeluarga)
 	api.POST("/keluargas/:ID", authMiddleware(authService, userService), keluargaHandler.UpdateKeluarga)
 	api.GET("/keluargas/:ID", authMiddleware(authService, userService), keluargaHandler.GetKeluarga)
+	api.GET("/keluargas/user", authMiddleware(authService, userService), keluargaHandler.GetKeluargaByUser)
 	api.DELETE("/keluargas/:ID", authMiddleware(authService, userService), keluargaHandler.DeleteKeluarga)
+
+	api.GET("/pengajuans", authMiddleware(authService, userService), pengajuanHandler.GetPengajuanUser)
+	api.GET("/pengajuans/admin", authMiddleware(authService, userService), pengajuanHandler.GetPengajuanAdmin)
+	// api.POST("/pengajuans", authMiddleware(authService, userService), pengajuanHandler.CreatePengajuan)
+	api.POST("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.UpdatePengajuan)
+	api.GET("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.GetPengajuan)
+	api.DELETE("/pengajuans/:ID", authMiddleware(authService, userService), pengajuanHandler.DeletePengajuan)
+
+	api.GET("/sktms", authMiddleware(authService, userService), sktmHandler.GetSKTMs)
+	api.POST("/sktms", authMiddleware(authService, userService), sktmHandler.CreateSKTM)
+	api.POST("/sktms/:ID", authMiddleware(authService, userService), sktmHandler.UpdateSKTM)
+	api.GET("/sktms/:ID", authMiddleware(authService, userService), sktmHandler.GetSKTM)
+	api.DELETE("/sktms/:ID", authMiddleware(authService, userService), sktmHandler.DeleteSKTM)
+
+	api.GET("/skus", authMiddleware(authService, userService), skuHandler.GetSKUs)
+	api.POST("/skus", authMiddleware(authService, userService), skuHandler.CreateSKU)
+	api.POST("/skus/:ID", authMiddleware(authService, userService), skuHandler.UpdateSKU)
+	api.GET("/skus/:ID", authMiddleware(authService, userService), skuHandler.GetSKU)
+	api.DELETE("/skus/:ID", authMiddleware(authService, userService), skuHandler.DeleteSKU)
+
+	api.GET("/domisilis", authMiddleware(authService, userService), domisiliHandler.GetDomisilis)
+	api.POST("/domisilis", authMiddleware(authService, userService), domisiliHandler.CreateDomisili)
+	api.POST("/domisilis/:ID", authMiddleware(authService, userService), domisiliHandler.UpdateDomisili)
+	api.GET("/domisilis/:ID", authMiddleware(authService, userService), domisiliHandler.GetDomisili)
+	api.DELETE("/domisilis/:ID", authMiddleware(authService, userService), domisiliHandler.DeleteDomisili)
+
+	api.GET("/keramaians", authMiddleware(authService, userService), keramaianHandler.GetKeramaians)
+	api.POST("/keramaians", authMiddleware(authService, userService), keramaianHandler.CreateKeramaian)
+	api.POST("/keramaians/:ID", authMiddleware(authService, userService), keramaianHandler.UpdateKeramaian)
+	api.GET("/keramaians/:ID", authMiddleware(authService, userService), keramaianHandler.GetKeramaian)
+	api.DELETE("/keramaians/:ID", authMiddleware(authService, userService), keramaianHandler.DeleteKeramaian)
+
+	api.GET("/kelahirans", authMiddleware(authService, userService), kelahiranHandler.GetKelahirans)
+	api.POST("/kelahirans", authMiddleware(authService, userService), kelahiranHandler.CreateKelahiran)
+	api.POST("/kelahirans/:ID", authMiddleware(authService, userService), kelahiranHandler.UpdateKelahiran)
+	api.GET("/kelahirans/:ID", authMiddleware(authService, userService), kelahiranHandler.GetKelahiran)
+	api.DELETE("/kelahirans/:ID", authMiddleware(authService, userService), kelahiranHandler.DeleteKelahiran)
+
+	api.GET("/kematians", authMiddleware(authService, userService), kematianHandler.GetKematians)
+	api.POST("/kematians", authMiddleware(authService, userService), kematianHandler.CreateKematian)
+	api.POST("/kematians/:ID", authMiddleware(authService, userService), kematianHandler.UpdateKematian)
+	api.GET("/kematians/:ID", authMiddleware(authService, userService), kematianHandler.GetKematian)
+	api.DELETE("/kematians/:ID", authMiddleware(authService, userService), kematianHandler.DeleteKematian)
+
+	api.GET("/berpergians", authMiddleware(authService, userService), berpergianHandler.GetBerpergians)
+	api.POST("/berpergians", authMiddleware(authService, userService), berpergianHandler.CreateBerpergian)
+	api.POST("/berpergians/:ID", authMiddleware(authService, userService), berpergianHandler.UpdateBerpergian)
+	api.GET("/berpergians/:ID", authMiddleware(authService, userService), berpergianHandler.GetBerpergian)
+	api.DELETE("/berpergians/:ID", authMiddleware(authService, userService), berpergianHandler.DeleteBerpergian)
+
+	api.POST("/berpergiands", authMiddleware(authService, userService), berpergianDetailHandler.CreateBerpergianDetail)
+
+	api.GET("/pindahs", authMiddleware(authService, userService), pindahHandler.GetPindahs)
+	api.POST("/pindahs", authMiddleware(authService, userService), pindahHandler.CreatePindah)
+	api.POST("/pindahs/:ID", authMiddleware(authService, userService), pindahHandler.UpdatePindah)
+	api.GET("/pindahs/:ID", authMiddleware(authService, userService), pindahHandler.GetPindah)
+	api.DELETE("/pindahs/:ID", authMiddleware(authService, userService), pindahHandler.DeletePindah)
+
+	api.POST("/pindahds", authMiddleware(authService, userService), pindahDetailHandler.CreatePindahDetail)
+
+	api.GET("/jandas", authMiddleware(authService, userService), jandaHandler.GetJandas)
+	api.POST("/jandas", authMiddleware(authService, userService), jandaHandler.CreateJanda)
+	api.POST("/jandas/:ID", authMiddleware(authService, userService), jandaHandler.UpdateJanda)
+	api.GET("/jandas/:ID", authMiddleware(authService, userService), jandaHandler.GetJanda)
+	api.DELETE("/jandas/:ID", authMiddleware(authService, userService), jandaHandler.DeleteJanda)
+
+	api.GET("/penghasilans", authMiddleware(authService, userService), penghasilanHandler.GetPenghasilans)
+	api.POST("/penghasilans", authMiddleware(authService, userService), penghasilanHandler.CreatePenghasilan)
+	api.POST("/penghasilans/:ID", authMiddleware(authService, userService), penghasilanHandler.UpdatePenghasilan)
+	api.GET("/penghasilans/:ID", authMiddleware(authService, userService), penghasilanHandler.GetPenghasilan)
+	api.DELETE("/penghasilans/:ID", authMiddleware(authService, userService), penghasilanHandler.DeletePenghasilan)
+
+	api.GET("/belum_menikahs", authMiddleware(authService, userService), belumMenikahHandler.GetBelumMenikahs)
+	api.POST("/belum_menikahs", authMiddleware(authService, userService), belumMenikahHandler.CreateBelumMenikah)
+	api.POST("/belum_menikahs/:ID", authMiddleware(authService, userService), belumMenikahHandler.UpdateBelumMenikah)
+	api.GET("/belum_menikahs/:ID", authMiddleware(authService, userService), belumMenikahHandler.GetBelumMenikah)
+	api.DELETE("/belum_menikahs/:ID", authMiddleware(authService, userService), belumMenikahHandler.DeleteBelumMenikah)
+
+	api.GET("/pernah_menikahs", authMiddleware(authService, userService), pernahMenikahHandler.GetPernahMenikahs)
+	api.POST("/pernah_menikahs", authMiddleware(authService, userService), pernahMenikahHandler.CreatePernahMenikah)
+	api.POST("/pernah_menikahs/:ID", authMiddleware(authService, userService), pernahMenikahHandler.UpdatePernahMenikah)
+	api.GET("/pernah_menikahs/:ID", authMiddleware(authService, userService), pernahMenikahHandler.GetPernahMenikah)
+	api.DELETE("/pernah_menikahs/:ID", authMiddleware(authService, userService), pernahMenikahHandler.DeletePernahMenikah)
+
+	api.GET("/kepolisians", authMiddleware(authService, userService), kepolisianHandler.GetKepolisians)
+	api.POST("/kepolisians", authMiddleware(authService, userService), kepolisianHandler.CreateKepolisian)
+	api.POST("/kepolisians/:ID", authMiddleware(authService, userService), kepolisianHandler.UpdateKepolisian)
+	api.GET("/kepolisians/:ID", authMiddleware(authService, userService), kepolisianHandler.GetKepolisian)
+	api.DELETE("/kepolisians/:ID", authMiddleware(authService, userService), kepolisianHandler.DeleteKepolisian)
+
+	api.GET("/rumahs", authMiddleware(authService, userService), rumahHandler.GetRumahs)
+	api.POST("/rumahs", authMiddleware(authService, userService), rumahHandler.CreateRumah)
+	api.POST("/rumahs/:ID", authMiddleware(authService, userService), rumahHandler.UpdateRumah)
+	api.GET("/rumahs/:ID", authMiddleware(authService, userService), rumahHandler.GetRumah)
+	api.DELETE("/rumahs/:ID", authMiddleware(authService, userService), rumahHandler.DeleteRumah)
+
+	api.GET("/tanahs", authMiddleware(authService, userService), tanahHandler.GetTanahs)
+	api.POST("/tanahs", authMiddleware(authService, userService), tanahHandler.CreateTanah)
+	api.POST("/tanahs/:ID", authMiddleware(authService, userService), tanahHandler.UpdateTanah)
+	api.GET("/tanahs/:ID", authMiddleware(authService, userService), tanahHandler.GetTanah)
+	api.DELETE("/tanahs/:ID", authMiddleware(authService, userService), tanahHandler.DeleteTanah)
+
+	api.GET("/sporadiks", authMiddleware(authService, userService), sporadikHandler.GetSporadiks)
+	api.POST("/sporadiks", authMiddleware(authService, userService), sporadikHandler.CreateSporadik)
+	api.POST("/sporadiks/:ID", authMiddleware(authService, userService), sporadikHandler.UpdateSporadik)
+	api.GET("/sporadiks/:ID", authMiddleware(authService, userService), sporadikHandler.GetSporadik)
+	api.DELETE("/sporadiks/:ID", authMiddleware(authService, userService), sporadikHandler.DeleteSporadik)
 
 	router.Run()
 
@@ -280,4 +487,27 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 
 		c.Set("currentUser", users)
 	}
+}
+
+func SetupFirebase() (*firebase.App, context.Context, *messaging.Client) {
+
+	ctx := context.Background()
+
+	serviceAccountKeyFilePath, err := filepath.Abs("./serviceAccountKeys.json")
+	if err != nil {
+		panic("Unable to load serviceAccountKeys.json file")
+	}
+
+	opt := option.WithCredentialsFile(serviceAccountKeyFilePath)
+
+	//Firebase admin SDK initialization
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		panic("Firebase load error")
+	}
+
+	//Messaging client
+	client, _ := app.Messaging(ctx)
+
+	return app, ctx, client
 }

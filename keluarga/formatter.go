@@ -2,12 +2,14 @@ package keluarga
 
 import (
 	"layanan-kependudukan-api/helper"
+	"layanan-kependudukan-api/penduduk"
 )
 
 type KeluargaFormatter struct {
 	Keluarga
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string                       `json:"created_at"`
+	UpdatedAt string                       `json:"updated_at"`
+	Penduduk  []penduduk.PendudukFormatter `json:"penduduk"`
 }
 
 func FormatKeluarga(Keluarga Keluarga) KeluargaFormatter {
@@ -15,6 +17,7 @@ func FormatKeluarga(Keluarga Keluarga) KeluargaFormatter {
 		Keluarga:  Keluarga,
 		CreatedAt: helper.FormatDateToString(Keluarga.CreatedAt),
 		UpdatedAt: helper.FormatDateToString(Keluarga.UpdatedAt),
+		Penduduk:  penduduk.FormatPenduduks(Keluarga.Penduduk),
 	}
 
 	return formatter
