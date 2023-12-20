@@ -98,13 +98,13 @@ func (r *repository) FindByUser(pagination helper.Pagination, user user.User) (h
 
 		var stat []string
 		if user.Role == "RT" {
-			stat = append(stat, "PENDING_RT", "REJECTED_RT")
+			stat = append(stat, "PENDING_RT", "REJECTED_RT", "APPROVED_RT")
 		}
 		if user.Role == "RW" {
-			stat = append(stat, "APPROVED_RT", "REJECTED_RW")
+			stat = append(stat, "APPROVED_RT", "REJECTED_RW", "APPROVED_RT")
 		}
 		if user.Role == "ADMIN" {
-			stat = append(stat, "APPROVED_RW", "PENDING_ADMIN")
+			stat = append(stat, "APPROVED_RW", "PENDING_ADMIN", "VALID", "REJECTED")
 		}
 
 		db = db.Joins("JOIN tb_penduduk ON tb_penduduk.nik = tb_pengajuan.nik").Where("tb_penduduk.rt_id = ? AND tb_penduduk.rw_id = ? AND (tb_pengajuan.nik = ? OR status IN (?))", penduduk.RtID, penduduk.RwID, user.Nik, stat)

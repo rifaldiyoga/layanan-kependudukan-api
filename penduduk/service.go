@@ -94,6 +94,8 @@ func (s *service) CreatePenduduk(input CreatePendudukInput) (Penduduk, error) {
 	penduduk.BloodType = input.BloodType
 	penduduk.KelurahanID = input.KelurahanID
 	penduduk.KecamatanID = input.KecamatanID
+	penduduk.KotaID = input.KotaID
+	penduduk.ProvinsiID = input.ProvinsiID
 	penduduk.NoKK = input.NoKK
 	penduduk.StatusFamily = input.StatusFamily
 	penduduk.CreatedAt = time.Now()
@@ -128,6 +130,8 @@ func (s *service) UpdatePenduduk(inputDetail GetPendudukDetailInput, input Creat
 	penduduk.BloodType = input.BloodType
 	penduduk.KelurahanID = input.KelurahanID
 	penduduk.KecamatanID = input.KecamatanID
+	penduduk.KotaID = input.KotaID
+	penduduk.ProvinsiID = input.ProvinsiID
 	penduduk.StatusFamily = input.StatusFamily
 	penduduk.CreatedAt = time.Now()
 	penduduk.UpdatedAt = time.Now()

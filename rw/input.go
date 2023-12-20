@@ -5,6 +5,7 @@ type GetRWDetailInput struct {
 }
 
 type CreateRWInput struct {
-	Code string `json:"code" binding:"required"`
-	Name string `json:"name" binding:"required"`
+	Code        string `json:"code" binding:"required"`
+	Name        string `json:"name" binding:"required"`
+	KelurahanID int    `json:"kelurahan_id" binding:"required"`
 }

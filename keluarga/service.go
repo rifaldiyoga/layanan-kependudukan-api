@@ -54,6 +54,8 @@ func (s *service) CreateKeluarga(input CreateKeluargaInput) (Keluarga, error) {
 	keluarga.RwID = input.RwID
 	keluarga.KelurahanID = input.KelurahanID
 	keluarga.KecamatanID = input.KecamatanID
+	keluarga.KotaID = input.KotaID
+	keluarga.ProvinsiID = input.ProvinsiID
 	keluarga.CreatedAt = time.Now()
 	keluarga.UpdatedAt = time.Now()
 
@@ -77,6 +79,8 @@ func (s *service) UpdateKeluarga(inputDetail GetKeluargaDetailInput, input Creat
 	keluarga.RwID = input.RwID
 	keluarga.KelurahanID = input.KelurahanID
 	keluarga.KecamatanID = input.KecamatanID
+	keluarga.KotaID = input.KotaID
+	keluarga.ProvinsiID = input.ProvinsiID
 	keluarga.CreatedAt = lastKeluarga.CreatedAt
 	keluarga.UpdatedAt = time.Now()
 

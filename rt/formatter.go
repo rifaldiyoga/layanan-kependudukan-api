@@ -19,6 +19,7 @@ func FormatRT(rt RT) RTFormatter {
 		ID:        rt.ID,
 		Code:      rt.Code,
 		Name:      rt.Name,
+		RwID:      rt.RwID,
 		CreatedAt: helper.FormatDateToString(rt.CreatedAt),
 		Rw:        rw.FormatRW(rt.RW),
 	}

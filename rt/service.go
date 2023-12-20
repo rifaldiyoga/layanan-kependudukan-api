@@ -35,6 +35,7 @@ func (s *service) CreateRT(input CreateRTInput) (RT, error) {
 
 	rt.Code = input.Code
 	rt.Name = input.Name
+	rt.RwID = input.RwID
 	rt.CreatedAt = time.Now()
 
 	newRT, err := s.repository.Save(rt)
@@ -49,6 +50,7 @@ func (s *service) UpdateRT(inputDetail GetRTDetailInput, input CreateRTInput) (R
 
 	rt.Code = input.Code
 	rt.Name = input.Name
+	rt.RwID = input.RwID
 	rt.UpdatedAt = time.Now()
 
 	newRT, err := s.repository.Update(rt)

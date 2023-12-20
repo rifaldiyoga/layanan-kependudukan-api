@@ -16,11 +16,12 @@ type RWFormatter struct {
 
 func FormatRW(rw RW) RWFormatter {
 	formatter := RWFormatter{
-		ID:        rw.ID,
-		Code:      rw.Code,
-		Name:      rw.Name,
-		CreatedAt: helper.FormatDateToString(rw.CreatedAt),
-		Kelurahan: kelurahan.FormatKelurahan(rw.Kelurahan),
+		ID:          rw.ID,
+		Code:        rw.Code,
+		Name:        rw.Name,
+		KelurahanID: rw.KelurahanID,
+		CreatedAt:   helper.FormatDateToString(rw.CreatedAt),
+		Kelurahan:   kelurahan.FormatKelurahan(rw.Kelurahan),
 	}
 
 	return formatter

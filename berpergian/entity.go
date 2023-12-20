@@ -19,7 +19,7 @@ type Berpergian struct {
 	CreatedAt        time.Time                            `json:"created_at"`
 	CreatedBy        int                                  `json:"created_by"`
 	Penduduk         penduduk.Penduduk                    `json:"penduduk" gorm:"foreignKey:NIK; references:NIK"`
-	BerpergianDetail []berpergian_detail.BerpergianDetail `json:"berpergian_detail" gorm:"foreignKey:BerpergianID;"`
+	BerpergianDetail []berpergian_detail.BerpergianDetail `json:"berpergian_detail" gorm:"foreignKey:BerpergianID"`
 }
 
 func (Berpergian) TableName() string {

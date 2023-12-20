@@ -35,6 +35,7 @@ func (s *service) CreateRW(input CreateRWInput) (RW, error) {
 
 	rw.Code = input.Code
 	rw.Name = input.Name
+	rw.KelurahanID = input.KelurahanID
 	rw.CreatedAt = time.Now()
 
 	newRW, err := s.repository.Save(rw)
@@ -49,6 +50,7 @@ func (s *service) UpdateRW(inputDetail GetRWDetailInput, input CreateRWInput) (R
 
 	rw.Code = input.Code
 	rw.Name = input.Name
+	rw.KelurahanID = input.KelurahanID
 	rw.UpdatedAt = time.Now()
 
 	newRW, err := s.repository.Update(rw)

@@ -71,10 +71,6 @@ func main() {
 
 	authService := auth.NewService()
 
-	userRepository := user.NewRepsitory(db)
-	userService := user.NewService(userRepository)
-	userHandler := handler.NewUserHandler(userService, authService)
-
 	religionRepository := religion.NewRepsitory(db)
 	religionService := religion.NewService(religionRepository)
 	religionHandler := handler.NewReligionHandler(religionService, authService)
@@ -133,6 +129,10 @@ func main() {
 	keluargaRepository := keluarga.NewRepsitory(db)
 	keluargaService := keluarga.NewService(keluargaRepository)
 	keluargaHandler := handler.NewKeluargaHandler(keluargaService, pendudukService, authService)
+
+	userRepository := user.NewRepsitory(db)
+	userService := user.NewService(userRepository)
+	userHandler := handler.NewUserHandler(userService, keluargaService, pendudukService, authService)
 
 	subDistrictRepository := subdistrict.NewRepsitory(db)
 	subDistrictService := subdistrict.NewService(subDistrictRepository)

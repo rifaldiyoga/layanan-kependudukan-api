@@ -22,6 +22,8 @@ type CreatePendudukInput struct {
 	RwID         int    `json:"rw_id" binding:"required"`
 	KelurahanID  int    `json:"kelurahan_id" binding:"required"`
 	KecamatanID  int    `json:"subdistrict_id" binding:"required"`
+	KotaID       int    `json:"district_id" binding:"required"`
+	ProvinsiID   int    `json:"province_id" binding:"required"`
 	JK           string `json:"jk" binding:"required"`
 	StatusFamily string `json:"status_family" `
 }

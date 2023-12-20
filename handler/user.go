@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"layanan-kependudukan-api/auth"
 	"layanan-kependudukan-api/helper"
+	"layanan-kependudukan-api/keluarga"
+	"layanan-kependudukan-api/penduduk"
 	"layanan-kependudukan-api/user"
 	"net/http"
 	"path/filepath"
@@ -12,12 +14,14 @@ import (
 )
 
 type userHandler struct {
-	userService user.Service
-	authService auth.Service
+	userService     user.Service
+	authService     auth.Service
+	keluargaService keluarga.Service
+	pendudukService penduduk.Service
 }
 
-func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
-	return &userHandler{userService, authService}
+func NewUserHandler(userService user.Service, keluargaService keluarga.Service, pendudukService penduduk.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService, keluargaService, pendudukService}
 }
 
 func (h *userHandler) RegiserUser(c *gin.Context) {
@@ -25,7 +29,7 @@ func (h *userHandler) RegiserUser(c *gin.Context) {
 	// map input dari user ke struct Register
 	// struct di atas diatas sebagai param service
 
-	var input user.CreateUserInput
+	var input keluarga.CreateKeluargaInput
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -38,7 +42,9 @@ func (h *userHandler) RegiserUser(c *gin.Context) {
 		return
 	}
 
-	newUser, err := h.userService.RegiserUser(input)
+	// var inputUser user.CreateUserInput
+	// inputUser.
+	// newUser, err := h.userService.RegiserUser(inputUser)
 
 	if err != nil {
 		response := helper.APIResponse("Registration Failed 2", http.StatusBadRequest, "error", err)
@@ -46,18 +52,18 @@ func (h *userHandler) RegiserUser(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.GenerateToken(newUser.ID)
-	if err != nil {
-		response := helper.APIResponse("Registration Failed 3", http.StatusBadRequest, "error", nil)
-		c.JSON(http.StatusBadRequest, response)
-		return
-	}
+	// token, err := h.authService.GenerateToken(newUser.ID)
+	// if err != nil {
+	// 	response := helper.APIResponse("Registration Failed 3", http.StatusBadRequest, "error", nil)
+	// 	c.JSON(http.StatusBadRequest, response)
+	// 	return
+	// }
 
-	formatter := user.FormatUser(newUser, token)
+	// formatter := user.FormatUser(newUser, token)
 
-	response := helper.APIResponse("Registration Success", http.StatusOK, "success", formatter)
+	// response := helper.APIResponse("Registration Success", http.StatusOK, "success", formatter)
 
-	c.JSON(http.StatusOK, response)
+	// c.JSON(http.StatusOK, response)
 }
 
 func (h *userHandler) Login(c *gin.Context) {
