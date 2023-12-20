@@ -43,6 +43,7 @@ import (
 	"layanan-kependudukan-api/user"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -60,8 +61,9 @@ import (
 )
 
 func main() {
-	dsn := "host=localhost user=postgres password=asdf1234 dbname=layanan-kependudukan port=5432 sslmode=disable TimeZone=Asia/Jakarta"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// dsn := "host=localhost user=postgres password=asdf1234 dbname=layanan-kependudukan port=5432 sslmode=disable TimeZone=Asia/Jakarta"
+	connection := os.Getenv("DATABASE_URL")
+	db, err := gorm.Open(postgres.Open(connection), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal(err.Error())
