@@ -24,11 +24,11 @@ type GetUserDetailInput struct {
 }
 
 type CreateUserInput struct {
-	Nik        string `form:"nik" `
-	Name       string `form:"name" binding:"required"`
-	Email      string `form:"email" binding:"required,email"`
-	Password   string `form:"password"`
-	Role       string `form:"role" binding:"required"`
-	AvatarPath string `form:"avatar_path"`
-	Token      string `form:"token"`
+	Nik        string `json:"nik" `
+	Name       string `json:"name" binding:"required"`
+	Email      string `json:"email" binding:"required,email"`
+	Password   string `json:"password"`
+	Role       string `json:"role" binding:"required"`
+	AvatarPath string `json:"avatar_path"`
+	Token      string `json:"token"`
 }

@@ -237,6 +237,7 @@ func main() {
 	api.POST("/logout", authMiddleware(authService, userService), userHandler.Logout)
 	api.POST("/email_checkers", authMiddleware(authService, userService), userHandler.CheckEmailAvailablity)
 	api.POST("/users", authMiddleware(authService, userService), userHandler.CreateUser)
+	api.POST("/users/admin", authMiddleware(authService, userService), userHandler.CreateUserAdmin)
 	api.POST("/users/:ID", authMiddleware(authService, userService), userHandler.UpdateUser)
 	api.GET("/users", authMiddleware(authService, userService), userHandler.GetUsers)
 	api.GET("/users/:ID", authMiddleware(authService, userService), userHandler.GetUser)

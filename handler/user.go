@@ -246,6 +246,51 @@ func (h *userHandler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *userHandler) CreateUserAdmin(c *gin.Context) {
+	var input user.CreateUserInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		fmt.Print(err.Error())
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	// file, err := c.FormFile("avatar")
+	// if err != nil {
+	// 	fmt.Print(err.Error())
+	// 	errors := helper.FormatValidationError(err)
+	// 	errorMessage := gin.H{"errors": errors}
+
+	// 	response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+	// 	c.JSON(http.StatusUnprocessableEntity, response)
+	// 	return
+	// }
+
+	// path := fmt.Sprintf("%s-%s", input.Name, helper.FormatFileName(file.Filename))
+	// filePath := filepath.Join("images/avatars", path)
+	// if err := c.SaveUploadedFile(file, filePath); err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+	// 	return
+	// }
+
+	// input.AvatarPath = filePath
+	newuser, err := h.userService.RegiserUser(input)
+	if err != nil {
+		response := helper.APIResponse("Failed create user", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := user.FormatUser(newuser, "")
+	response := helper.APIResponse("Success create user", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
+
 func (h *userHandler) UpdateUser(c *gin.Context) {
 	var inputID user.GetUserDetailInput
 	var inputData user.CreateUserInput
