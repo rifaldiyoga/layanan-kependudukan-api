@@ -103,7 +103,7 @@ func (r *repository) FindByUser(pagination helper.Pagination, user user.User) (h
 		if user.Role == "RW" {
 			stat = append(stat, "APPROVED_RT", "REJECTED_RW", "APPROVED_RT")
 		}
-		if user.Role == "ADMIN" {
+		if user.Role == "ADMIN" || user.Role == "KELURAHAN" {
 			stat = append(stat, "APPROVED_RW", "PENDING_ADMIN", "VALID", "REJECTED")
 		}
 
