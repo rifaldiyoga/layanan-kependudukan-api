@@ -107,7 +107,12 @@ func (r *repository) FindByUser(pagination helper.Pagination, user user.User) (h
 			stat = append(stat, "APPROVED_RW", "PENDING_ADMIN", "VALID", "REJECTED")
 		}
 
-		db = db.Joins("JOIN tb_penduduk ON tb_penduduk.nik = tb_pengajuan.nik").Where("tb_penduduk.rt_id = ? AND tb_penduduk.rw_id = ? AND (tb_pengajuan.nik = ? OR status IN (?))", penduduk.RtID, penduduk.RwID, user.Nik, stat)
+		db = db.Joins("JOIN tb_penduduk ON tb_penduduk.nik = tb_pengajuan.nik")
+		if user.Role == "ADMIN" || user.Role == "KELURAHAN" {
+			db = db.Where(" status IN (?)", stat)
+		} else {
+			db = db.Where("tb_penduduk.rt_id = ? AND tb_penduduk.rw_id = ? AND (tb_pengajuan.nik = ? OR status IN (?))", penduduk.RtID, penduduk.RwID, user.Nik, stat)
+		}
 
 	} else {
 		db = db.Where("tb_pengajuan.nik = ?", user.Nik)
