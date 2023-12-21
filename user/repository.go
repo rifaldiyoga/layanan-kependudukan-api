@@ -86,7 +86,7 @@ func (r *repository) FindByNIK(nik string) (User, error) {
 
 func (r *repository) FindByAdmin() ([]User, error) {
 	var user []User
-	err := r.db.Where("role = ?", "ADMIN").Find(&user).Error
+	err := r.db.Where("role = ? OR role = ?", "ADMIN", "KELURAHAN").Find(&user).Error
 	if err != nil {
 		return user, err
 	}
