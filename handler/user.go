@@ -306,7 +306,7 @@ func (h *userHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	err := c.ShouldBind(&inputData)
+	err := c.ShouldBindJSON(&inputData)
 	if err != nil {
 		errors := helper.FormatValidationError(err)
 		errorMessage := gin.H{"errors": errors}
@@ -316,25 +316,25 @@ func (h *userHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	file, err := c.FormFile("avatar")
-	if err != nil {
-		fmt.Print(err.Error())
-		errors := helper.FormatValidationError(err)
-		errorMessage := gin.H{"errors": errors}
+	// file, err := c.FormFile("avatar")
+	// if err != nil {
+	// 	fmt.Print(err.Error())
+	// 	errors := helper.FormatValidationError(err)
+	// 	errorMessage := gin.H{"errors": errors}
 
-		response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
-		c.JSON(http.StatusUnprocessableEntity, response)
-		return
-	}
+	// 	response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+	// 	c.JSON(http.StatusUnprocessableEntity, response)
+	// 	return
+	// }
 
-	path := fmt.Sprintf("%s-%s", inputData.Name, helper.FormatFileName(file.Filename))
-	filePath := filepath.Join("images/avatars", path)
-	if err := c.SaveUploadedFile(file, filePath); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
-		return
-	}
+	// path := fmt.Sprintf("%s-%s", inputData.Name, helper.FormatFileName(file.Filename))
+	// filePath := filepath.Join("images/avatars", path)
+	// if err := c.SaveUploadedFile(file, filePath); err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+	// 	return
+	// }
 
-	inputData.AvatarPath = filePath
+	// inputData.AvatarPath = filePath
 
 	newuser, err := h.userService.UpdateUser(inputID, inputData)
 	if err != nil {
