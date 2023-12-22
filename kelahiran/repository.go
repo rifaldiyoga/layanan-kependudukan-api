@@ -34,7 +34,7 @@ func (r *repository) FindAll(pagination helper.Pagination, params url.Values) (h
 		db = db.Where("created_at between ? and ?", helper.FormatStringToDate(params.Get("start_date")), helper.FormatStringToDate(params.Get("end_date")))
 	}
 
-	err := db.Scopes(helper.Paginate(kelahirans, &pagination, r.db)).Where("status = true").Find(&kelahirans).Error
+	err := db.Order("created_at DESC").Preload(clause.Associations).Scopes(helper.Paginate(kelahirans, &pagination, r.db)).Where("status = true").Find(&kelahirans).Error
 	if err != nil {
 		return pagination, err
 	}

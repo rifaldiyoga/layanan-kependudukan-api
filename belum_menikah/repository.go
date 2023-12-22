@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository interface {
@@ -32,7 +33,7 @@ func (r *repository) FindAll(pagination helper.Pagination, params url.Values) (h
 		db = db.Where("created_at between ? and ?", helper.FormatStringToDate(params.Get("start_date")), helper.FormatStringToDate(params.Get("end_date")))
 	}
 
-	err := db.Scopes(helper.Paginate(jandas, &pagination, r.db)).Where("status = true").Find(&jandas).Error
+	err := db.Order("created_at DESC").Preload(clause.Associations).Scopes(helper.Paginate(jandas, &pagination, r.db)).Where("status = true").Find(&jandas).Error
 	if err != nil {
 		return pagination, err
 	}
