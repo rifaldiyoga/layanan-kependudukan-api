@@ -45,7 +45,11 @@ func (s *service) RegiserUser(input CreateUserInput) (User, error) {
 	}
 
 	user.Password = string(password)
-	user.Role = input.Role
+	if input.Role == "" {
+		user.Role = "PENDUDUK"
+	} else {
+		user.Role = input.Role
+	}
 	user.Token = input.Token
 
 	newUser, err := s.repository.Save(user)
