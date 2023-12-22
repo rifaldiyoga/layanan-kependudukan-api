@@ -25,11 +25,7 @@ func NewUserHandler(userService user.Service, keluargaService keluarga.Service, 
 }
 
 func (h *userHandler) RegiserUser(c *gin.Context) {
-	//tangkap input dari user
-	// map input dari user ke struct Register
-	// struct di atas diatas sebagai param service
-
-	var input keluarga.CreateKeluargaInput
+	var input user.CreateUserInput
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -37,33 +33,31 @@ func (h *userHandler) RegiserUser(c *gin.Context) {
 		errors := helper.FormatValidationError(err)
 		errorMessage := gin.H{"errors": errors}
 
-		response := helper.APIResponse("Registartion Failed tes", http.StatusUnprocessableEntity, "error", errorMessage)
+		response := helper.APIResponse("Registartion Failed ", http.StatusUnprocessableEntity, "error", errorMessage)
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
-	// var inputUser user.CreateUserInput
-	// inputUser.
-	// newUser, err := h.userService.RegiserUser(inputUser)
+	newUser, err := h.userService.RegiserUser(input)
 
 	if err != nil {
-		response := helper.APIResponse("Registration Failed 2", http.StatusBadRequest, "error", err)
+		response := helper.APIResponse("Registration Failed ", http.StatusBadRequest, "error", err)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	// token, err := h.authService.GenerateToken(newUser.ID)
-	// if err != nil {
-	// 	response := helper.APIResponse("Registration Failed 3", http.StatusBadRequest, "error", nil)
-	// 	c.JSON(http.StatusBadRequest, response)
-	// 	return
-	// }
+	token, err := h.authService.GenerateToken(newUser.ID)
+	if err != nil {
+		response := helper.APIResponse("Registration Failed ", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 
-	// formatter := user.FormatUser(newUser, token)
+	formatter := user.FormatUser(newUser, token)
 
-	// response := helper.APIResponse("Registration Success", http.StatusOK, "success", formatter)
+	response := helper.APIResponse("Registration Success", http.StatusOK, "success", formatter)
 
-	// c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *userHandler) Login(c *gin.Context) {
