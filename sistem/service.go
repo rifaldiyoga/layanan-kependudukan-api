@@ -40,6 +40,13 @@ func (s *service) UpdateSistem(inputDetail GetSistemDetailInput, input CreateSis
 	sistem := Sistem{}
 	sistem.ID = inputDetail.ID
 	sistem.Code = input.Code
+	sistem.Nama = input.Nama
+	sistem.Alamat = input.Alamat
+	sistem.Telp = input.Telp
+	sistem.KecamatanID = input.KecamatanID
+	sistem.ProvinsiID = input.ProvinsiID
+	sistem.KotaID = input.KotaID
+	sistem.KodePos = input.KodePos
 
 	newSistem, err := s.repository.Update(sistem)
 	return newSistem, err

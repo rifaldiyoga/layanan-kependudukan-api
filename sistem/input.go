@@ -5,6 +5,12 @@ type GetSistemDetailInput struct {
 }
 
 type CreateSistemInput struct {
-	Code string `json:"code" binding:"required"`
-	Name string `json:"name" binding:"required"`
+	Code        string `json:"code"`
+	Nama        string `json:"nama"`
+	Alamat      string `json:"alamat"`
+	Telp        string `json:"telp"`
+	KodePos     string `json:"kode_pos"`
+	KecamatanID int    `json:"subdistrict_id"`
+	KotaID      int    `json:"district_id"`
+	ProvinsiID  int    `json:"province_id"`
 }
