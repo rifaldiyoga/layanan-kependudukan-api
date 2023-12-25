@@ -7,7 +7,7 @@ import (
 
 type AparaturDesa struct {
 	ID        int               `json:"id"`
-	NIP       string            `json:"nip"`
+	Nip       string            `json:"nip"`
 	Nama      string            `json:"nama"`
 	JabatanID int               `json:"jabatan_id"`
 	Jabatan   position.Position `json:"jabatan" gorm:"foreignKey:JabatanID; "`

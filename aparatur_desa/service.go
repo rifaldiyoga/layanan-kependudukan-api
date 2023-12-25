@@ -37,7 +37,7 @@ func (s *service) CreateAparaturDesa(input CreateAparaturDesaInput) (AparaturDes
 	if err != nil {
 		return kelurahan, err
 	}
-	kelurahan.NIP = input.NIP
+	kelurahan.Nip = input.NIP
 	kelurahan.Nama = input.Nama
 	kelurahan.JabatanID = i
 	kelurahan.CreatedAt = time.Now()
@@ -55,7 +55,7 @@ func (s *service) UpdateAparaturDesa(inputDetail GetAparaturDesaDetailInput, inp
 	if err != nil {
 		return AparaturDesa, err
 	}
-	AparaturDesa.NIP = input.NIP
+	AparaturDesa.Nip = input.NIP
 	AparaturDesa.Nama = input.Nama
 	AparaturDesa.JabatanID = i
 	AparaturDesa.UpdatedAt = time.Now()

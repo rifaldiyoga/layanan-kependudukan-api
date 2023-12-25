@@ -17,7 +17,7 @@ type AparaturDesaFormatter struct {
 func FormatAparaturDesa(kelurahan AparaturDesa) AparaturDesaFormatter {
 	formatter := AparaturDesaFormatter{
 		ID:        kelurahan.ID,
-		NIP:       kelurahan.NIP,
+		NIP:       kelurahan.Nip,
 		JabatanID: kelurahan.JabatanID,
 		Nama:      kelurahan.Nama,
 		CreatedAt: helper.FormatDateToString(kelurahan.CreatedAt),
