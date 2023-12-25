@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	aparaturDesa "layanan-kependudukan-api/aparatur_desa"
 	"layanan-kependudukan-api/article"
 	"layanan-kependudukan-api/auth"
 	belumMenikah "layanan-kependudukan-api/belum_menikah"
@@ -96,6 +97,10 @@ func main() {
 	positionRepository := position.NewRepsitory(db)
 	positionService := position.NewService(positionRepository)
 	positionHandler := handler.NewPositionHandler(positionService, authService)
+
+	aparaturDesaRepository := aparaturDesa.NewRepsitory(db)
+	aparaturDesaService := aparaturDesa.NewService(aparaturDesaRepository)
+	aparaturDesaHandler := handler.NewAparaturDesaHandler(aparaturDesaService, authService)
 
 	articleRepository := article.NewRepsitory(db)
 	articleService := article.NewService(articleRepository)
@@ -266,6 +271,12 @@ func main() {
 	api.POST("/jobs/:ID", authMiddleware(authService, userService), jobHandler.UpdateJob)
 	api.GET("/jobs/:ID", authMiddleware(authService, userService), jobHandler.GetJob)
 	api.DELETE("/jobs/:ID", authMiddleware(authService, userService), jobHandler.DeleteJob)
+
+	api.GET("/aparatur_desas", authMiddleware(authService, userService), aparaturDesaHandler.GetAparaturDesas)
+	api.POST("/aparatur_desas", authMiddleware(authService, userService), aparaturDesaHandler.CreateAparaturDesa)
+	api.POST("/aparatur_desas/:ID", authMiddleware(authService, userService), aparaturDesaHandler.UpdateAparaturDesa)
+	api.GET("/aparatur_desas/:ID", authMiddleware(authService, userService), aparaturDesaHandler.GetAparaturDesa)
+	api.DELETE("/aparatur_desas/:ID", authMiddleware(authService, userService), aparaturDesaHandler.DeleteAparaturDesa)
 
 	api.GET("/kelurahans", authMiddleware(authService, userService), kelurahanHandler.GetKelurahans)
 	api.POST("/kelurahans", authMiddleware(authService, userService), kelurahanHandler.CreateKelurahan)
