@@ -6,10 +6,10 @@ import (
 )
 
 type AparaturDesa struct {
-	ID        int    `json:"id"`
-	Code      string `json:"code"`
-	Name      string `json:"name"`
-	JabatanID int
+	ID        int               `json:"id"`
+	NIP       string            `json:"nip"`
+	Nama      string            `json:"nama"`
+	JabatanID int               `json:"jabatan_id"`
 	Jabatan   position.Position `json:"jabatan" gorm:"foreignKey:JabatanID; "`
 	CreatedAt time.Time
 	UpdatedAt time.Time

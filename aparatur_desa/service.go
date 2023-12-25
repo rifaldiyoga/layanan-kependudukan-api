@@ -33,8 +33,9 @@ func (s *service) GetAparaturDesaByID(ID int) (AparaturDesa, error) {
 func (s *service) CreateAparaturDesa(input CreateAparaturDesaInput) (AparaturDesa, error) {
 	kelurahan := AparaturDesa{}
 
-	kelurahan.Code = input.Code
-	kelurahan.Name = input.Name
+	kelurahan.NIP = input.NIP
+	kelurahan.Nama = input.Nama
+	kelurahan.JabatanID = input.JabatanID
 	kelurahan.CreatedAt = time.Now()
 
 	newAparaturDesa, err := s.repository.Save(kelurahan)
@@ -47,8 +48,9 @@ func (s *service) UpdateAparaturDesa(inputDetail GetAparaturDesaDetailInput, inp
 		return AparaturDesa, err
 	}
 
-	AparaturDesa.Code = input.Code
-	AparaturDesa.Name = input.Name
+	AparaturDesa.NIP = input.NIP
+	AparaturDesa.Nama = input.Nama
+	AparaturDesa.JabatanID = input.JabatanID
 	AparaturDesa.UpdatedAt = time.Now()
 
 	newAparaturDesa, err := s.repository.Update(AparaturDesa)

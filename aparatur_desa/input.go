@@ -5,6 +5,7 @@ type GetAparaturDesaDetailInput struct {
 }
 
 type CreateAparaturDesaInput struct {
-	Code string `json:"code" binding:"required"`
-	Name string `json:"name" binding:"required"`
+	NIP       string `json:"nip" binding:"required"`
+	JabatanID int    `json:"jabatan_id" binding:"required"`
+	Nama      string `json:"nama" binding:"required"`
 }

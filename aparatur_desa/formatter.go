@@ -7,8 +7,9 @@ import (
 
 type AparaturDesaFormatter struct {
 	ID        int                        `json:"id"`
-	Code      string                     `json:"code"`
-	Name      string                     `json:"name"`
+	NIP       string                     `json:"nip"`
+	Nama      string                     `json:"nama"`
+	JabatanID int                        `json:"jabatan_id"`
 	CreatedAt string                     `json:"created_at"`
 	Jabatan   position.PositionFormatter `json:"jabatan" `
 }
@@ -16,8 +17,9 @@ type AparaturDesaFormatter struct {
 func FormatAparaturDesa(kelurahan AparaturDesa) AparaturDesaFormatter {
 	formatter := AparaturDesaFormatter{
 		ID:        kelurahan.ID,
-		Code:      kelurahan.Code,
-		Name:      kelurahan.Name,
+		NIP:       kelurahan.NIP,
+		JabatanID: kelurahan.JabatanID,
+		Nama:      kelurahan.Nama,
 		CreatedAt: helper.FormatDateToString(kelurahan.CreatedAt),
 		Jabatan:   position.FormatPosition(kelurahan.Jabatan),
 	}
