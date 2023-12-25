@@ -2,6 +2,7 @@ package aparatur_desa
 
 import (
 	"layanan-kependudukan-api/helper"
+	"strconv"
 	"time"
 )
 
@@ -32,10 +33,10 @@ func (s *service) GetAparaturDesaByID(ID int) (AparaturDesa, error) {
 
 func (s *service) CreateAparaturDesa(input CreateAparaturDesaInput) (AparaturDesa, error) {
 	kelurahan := AparaturDesa{}
-
+	i, _ := strconv.Atoi(input.JabatanID)
 	kelurahan.NIP = input.NIP
 	kelurahan.Nama = input.Nama
-	kelurahan.JabatanID = input.JabatanID
+	kelurahan.JabatanID = i
 	kelurahan.CreatedAt = time.Now()
 
 	newAparaturDesa, err := s.repository.Save(kelurahan)
@@ -47,10 +48,10 @@ func (s *service) UpdateAparaturDesa(inputDetail GetAparaturDesaDetailInput, inp
 	if err != nil {
 		return AparaturDesa, err
 	}
-
+	i, _ := strconv.Atoi(input.JabatanID)
 	AparaturDesa.NIP = input.NIP
 	AparaturDesa.Nama = input.Nama
-	AparaturDesa.JabatanID = input.JabatanID
+	AparaturDesa.JabatanID = i
 	AparaturDesa.UpdatedAt = time.Now()
 
 	newAparaturDesa, err := s.repository.Update(AparaturDesa)

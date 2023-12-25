@@ -6,6 +6,6 @@ type GetAparaturDesaDetailInput struct {
 
 type CreateAparaturDesaInput struct {
 	NIP       string `json:"nip" binding:"required"`
-	JabatanID int    `json:"jabatan_id" binding:"required"`
+	JabatanID string `json:"jabatan_id" binding:"required"`
 	Nama      string `json:"nama" binding:"required"`
 }
