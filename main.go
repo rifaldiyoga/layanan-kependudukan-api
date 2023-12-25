@@ -35,6 +35,7 @@ import (
 	"layanan-kependudukan-api/rt"
 	"layanan-kependudukan-api/rumah"
 	"layanan-kependudukan-api/rw"
+	"layanan-kependudukan-api/sistem"
 	"layanan-kependudukan-api/sktm"
 	"layanan-kependudukan-api/sku"
 	"layanan-kependudukan-api/sporadik"
@@ -77,6 +78,10 @@ func main() {
 	religionRepository := religion.NewRepsitory(db)
 	religionService := religion.NewService(religionRepository)
 	religionHandler := handler.NewReligionHandler(religionService, authService)
+
+	sistemRepository := sistem.NewRepsitory(db)
+	sistemService := sistem.NewService(sistemRepository)
+	sistemHandler := handler.NewSistemHandler(sistemService, authService)
 
 	statusRepository := status.NewRepsitory(db)
 	statusService := status.NewService(statusRepository)
@@ -253,6 +258,12 @@ func main() {
 	api.POST("/religions/:ID", authMiddleware(authService, userService), religionHandler.UpdateReligion)
 	api.GET("/religions/:ID", authMiddleware(authService, userService), religionHandler.GetReligion)
 	api.DELETE("/religions/:ID", authMiddleware(authService, userService), religionHandler.DeleteReligion)
+
+	api.GET("/sistems", authMiddleware(authService, userService), sistemHandler.GetSistems)
+	api.POST("/sistems", authMiddleware(authService, userService), sistemHandler.CreateSistem)
+	api.POST("/sistems/:ID", authMiddleware(authService, userService), sistemHandler.UpdateSistem)
+	api.GET("/sistems/:ID", authMiddleware(authService, userService), sistemHandler.GetSistem)
+	api.DELETE("/sistems/:ID", authMiddleware(authService, userService), sistemHandler.DeleteSistem)
 
 	api.GET("/status", authMiddleware(authService, userService), statusHandler.GetStatuss)
 	api.POST("/status", authMiddleware(authService, userService), statusHandler.CreateStatus)
