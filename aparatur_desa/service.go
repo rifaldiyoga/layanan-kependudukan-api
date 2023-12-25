@@ -33,7 +33,10 @@ func (s *service) GetAparaturDesaByID(ID int) (AparaturDesa, error) {
 
 func (s *service) CreateAparaturDesa(input CreateAparaturDesaInput) (AparaturDesa, error) {
 	kelurahan := AparaturDesa{}
-	i, _ := strconv.Atoi(input.JabatanID)
+	i, err := strconv.Atoi(input.JabatanID)
+	if err != nil {
+		return kelurahan, err
+	}
 	kelurahan.NIP = input.NIP
 	kelurahan.Nama = input.Nama
 	kelurahan.JabatanID = i
@@ -48,7 +51,10 @@ func (s *service) UpdateAparaturDesa(inputDetail GetAparaturDesaDetailInput, inp
 	if err != nil {
 		return AparaturDesa, err
 	}
-	i, _ := strconv.Atoi(input.JabatanID)
+	i, err := strconv.Atoi(input.JabatanID)
+	if err != nil {
+		return AparaturDesa, err
+	}
 	AparaturDesa.NIP = input.NIP
 	AparaturDesa.Nama = input.Nama
 	AparaturDesa.JabatanID = i

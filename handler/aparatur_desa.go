@@ -33,7 +33,7 @@ func (h *aparaturDesaHandler) CreateAparaturDesa(c *gin.Context) {
 
 	newaparaturDesa, err := h.aparaturDesaService.CreateAparaturDesa(input)
 	if err != nil {
-		response := helper.APIResponse("Failed create aparaturDesa", http.StatusBadRequest, "error", nil)
+		response := helper.APIResponse("Failed create aparaturDesa", http.StatusBadRequest, "error", err)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -69,7 +69,7 @@ func (h *aparaturDesaHandler) UpdateAparaturDesa(c *gin.Context) {
 
 	newaparaturDesa, err := h.aparaturDesaService.UpdateAparaturDesa(inputID, inputData)
 	if err != nil {
-		response := helper.APIResponse("Failed Update aparaturDesa", http.StatusBadRequest, "error", nil)
+		response := helper.APIResponse("Failed Update aparaturDesa", http.StatusBadRequest, "error", err)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
