@@ -4,6 +4,7 @@ import (
 	"layanan-kependudukan-api/helper"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository interface {
@@ -35,7 +36,7 @@ func (r *repository) FindAll(pagination helper.Pagination) (helper.Pagination, e
 
 func (r *repository) FindByID(ID int) (Sistem, error) {
 	var sistems Sistem
-	err := r.db.Where("id = ?", ID).First(&sistems).Error
+	err := r.db.Preload(clause.Associations).Where("id = ?", ID).First(&sistems).Error
 	if err != nil {
 		return sistems, err
 	}
