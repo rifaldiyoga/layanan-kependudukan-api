@@ -1,16 +1,16 @@
 package position
 
 type PositionFormatter struct {
-	ID   int    `json:"id"`
-	Code string `json:"code"`
-	Name string `json:"name"`
+	ID      int    `json:"id"`
+	Code    string `json:"code"`
+	Jabatan string `json:"jabatan"`
 }
 
 func FormatPosition(position Position) PositionFormatter {
 	formatter := PositionFormatter{
-		ID:   position.ID,
-		Code: position.Code,
-		Name: position.Name,
+		ID:      position.ID,
+		Code:    position.Code,
+		Jabatan: position.Jabatan,
 	}
 
 	return formatter

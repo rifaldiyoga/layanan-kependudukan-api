@@ -5,7 +5,7 @@ import "time"
 type Position struct {
 	ID        int
 	Code      string
-	Name      string
+	Jabatan   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -34,7 +34,7 @@ func (s *service) CreatePosition(input CreatePositionInput) (Position, error) {
 	position := Position{}
 
 	position.Code = input.Code
-	position.Name = input.Name
+	position.Jabatan = input.Jabatan
 	position.CreatedAt = time.Now()
 
 	newPosition, err := s.repository.Save(position)
@@ -48,7 +48,7 @@ func (s *service) UpdatePosition(inputDetail GetPositionDetailInput, input Creat
 	}
 
 	position.Code = input.Code
-	position.Name = input.Name
+	position.Jabatan = input.Jabatan
 	position.UpdatedAt = time.Now()
 
 	newPosition, err := s.repository.Update(position)

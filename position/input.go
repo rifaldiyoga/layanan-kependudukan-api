@@ -5,6 +5,6 @@ type GetPositionDetailInput struct {
 }
 
 type CreatePositionInput struct {
-	Code string `json:"code" binding:"required"`
-	Name string `json:"name" binding:"required"`
+	Code    string `json:"code" binding:"required"`
+	Jabatan string `json:"jabatan" binding:"required"`
 }
