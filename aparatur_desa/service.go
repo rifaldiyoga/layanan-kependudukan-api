@@ -9,6 +9,7 @@ import (
 type Service interface {
 	GetAparaturDesaByID(ID int) (AparaturDesa, error)
 	GetAparaturDesas(pagination helper.Pagination) (helper.Pagination, error)
+	GetKepalaKelurahan() (AparaturDesa, error)
 	CreateAparaturDesa(input CreateAparaturDesaInput) (AparaturDesa, error)
 	UpdateAparaturDesa(ID GetAparaturDesaDetailInput, input CreateAparaturDesaInput) (AparaturDesa, error)
 	DeleteAparaturDesa(ID GetAparaturDesaDetailInput) error
@@ -24,6 +25,15 @@ func NewService(repository *repository) *service {
 
 func (s *service) GetAparaturDesaByID(ID int) (AparaturDesa, error) {
 	AparaturDesa, err := s.repository.FindByID(ID)
+	if err != nil {
+		return AparaturDesa, err
+	}
+
+	return AparaturDesa, nil
+}
+
+func (s *service) GetKepalaKelurahan() (AparaturDesa, error) {
+	AparaturDesa, err := s.repository.FindByKepalaKelurahan()
 	if err != nil {
 		return AparaturDesa, err
 	}

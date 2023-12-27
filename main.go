@@ -287,6 +287,7 @@ func main() {
 	api.POST("/aparatur_desas", authMiddleware(authService, userService), aparaturDesaHandler.CreateAparaturDesa)
 	api.POST("/aparatur_desas/:ID", authMiddleware(authService, userService), aparaturDesaHandler.UpdateAparaturDesa)
 	api.GET("/aparatur_desas/:ID", authMiddleware(authService, userService), aparaturDesaHandler.GetAparaturDesa)
+	api.GET("/aparatur_desas/lurah", authMiddleware(authService, userService), aparaturDesaHandler.GetKepalaKelurahan)
 	api.DELETE("/aparatur_desas/:ID", authMiddleware(authService, userService), aparaturDesaHandler.DeleteAparaturDesa)
 
 	api.GET("/kelurahans", authMiddleware(authService, userService), kelurahanHandler.GetKelurahans)

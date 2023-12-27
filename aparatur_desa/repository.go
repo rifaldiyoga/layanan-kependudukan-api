@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	FindAll(pagination helper.Pagination) (helper.Pagination, error)
 	FindByID(id int) (AparaturDesa, error)
+	FindByKepalaKelurahan() (AparaturDesa, error)
 	Save(aparaturDesa AparaturDesa) (AparaturDesa, error)
 	Update(aparaturDesa AparaturDesa) (AparaturDesa, error)
 	Delete(aparaturDesa AparaturDesa) error
@@ -37,6 +38,16 @@ func (r *repository) FindAll(pagination helper.Pagination) (helper.Pagination, e
 func (r *repository) FindByID(ID int) (AparaturDesa, error) {
 	var aparaturDesa AparaturDesa
 	err := r.db.Where("id = ?", ID).Find(&aparaturDesa).Error
+	if err != nil {
+		return aparaturDesa, err
+	}
+
+	return aparaturDesa, nil
+}
+
+func (r *repository) FindByKepalaKelurahan() (AparaturDesa, error) {
+	var aparaturDesa AparaturDesa
+	err := r.db.Where("jabatan_id = ?", 1).Find(&aparaturDesa).Error
 	if err != nil {
 		return aparaturDesa, err
 	}

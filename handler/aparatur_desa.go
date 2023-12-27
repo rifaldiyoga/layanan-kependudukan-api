@@ -121,6 +121,20 @@ func (h *aparaturDesaHandler) GetAparaturDesas(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *aparaturDesaHandler) GetKepalaKelurahan(c *gin.Context) {
+
+	newAparaturDesa, err := h.aparaturDesaService.GetKepalaKelurahan()
+	if err != nil {
+		response := helper.APIResponse("Failed Get AparaturDesa", http.StatusBadRequest, "error", err.Error())
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := aparaturDesa.FormatAparaturDesa(newAparaturDesa)
+	response := helper.APIResponse("Success Get AparaturDesa", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
+
 func (h *aparaturDesaHandler) GetAparaturDesa(c *gin.Context) {
 	var inputID aparaturDesa.GetAparaturDesaDetailInput
 
