@@ -165,3 +165,15 @@ func SendNotification(app *firebase.App, token string, title string, body string
 	}
 
 }
+
+func CapitalizeEachWord(input string) string {
+	words := strings.Fields(input) // Split the input string into words
+
+	var capitalizedWords []string
+	for _, word := range words {
+		capitalizedWord := strings.Title(word) // Capitalize the first letter of each word
+		capitalizedWords = append(capitalizedWords, capitalizedWord)
+	}
+
+	return strings.Join(capitalizedWords, " ") // Join the words back into a string
+}

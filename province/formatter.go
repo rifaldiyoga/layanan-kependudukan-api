@@ -13,7 +13,7 @@ func FormatProvince(province Province) ProvinceFormatter {
 	formatter := ProvinceFormatter{
 		ID:        province.ID,
 		Code:      province.Code,
-		Name:      province.Name,
+		Name:      helper.CapitalizeEachWord(province.Name),
 		CreatedAt: helper.FormatDateToString(province.CreatedAt),
 	}
 

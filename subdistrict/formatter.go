@@ -18,7 +18,7 @@ func FormatSubDistrict(subDistrict SubDistrict) SubDistrictFormatter {
 	formatter := SubDistrictFormatter{
 		ID:        subDistrict.ID,
 		Code:      subDistrict.Code,
-		Name:      subDistrict.Name,
+		Name:      helper.CapitalizeEachWord(subDistrict.Name),
 		CreatedAt: helper.FormatDateToString(subDistrict.CreatedAt),
 		KotaID:    subDistrict.KotaID,
 		Kota:      district.FormatDistrict(subDistrict.Kota),

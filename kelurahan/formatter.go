@@ -17,7 +17,7 @@ func FormatKelurahan(kelurahan Kelurahan) KelurahanFormatter {
 	formatter := KelurahanFormatter{
 		ID:        kelurahan.ID,
 		Code:      kelurahan.Code,
-		Name:      kelurahan.Name,
+		Name:      helper.CapitalizeEachWord(kelurahan.Name),
 		CreatedAt: helper.FormatDateToString(kelurahan.CreatedAt),
 		Kecamatan: subdistrict.FormatSubDistrict(kelurahan.Kecamatan),
 	}

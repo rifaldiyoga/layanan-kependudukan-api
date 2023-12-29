@@ -18,7 +18,7 @@ func FormatDistrict(district District) DistrictFormatter {
 	formatter := DistrictFormatter{
 		ID:         district.ID,
 		Code:       district.Code,
-		Name:       district.Name,
+		Name:       helper.CapitalizeEachWord(district.Name),
 		ProvinceID: district.ProvinsiID,
 		CreatedAt:  helper.FormatDateToString(district.CreatedAt),
 		Provinsi:   province.FormatProvince(district.Provinsi),
