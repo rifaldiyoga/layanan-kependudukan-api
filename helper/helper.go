@@ -13,6 +13,8 @@ import (
 	"firebase.google.com/go/messaging"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 const PENDUDUK = "PENDUDUK"
@@ -171,7 +173,7 @@ func CapitalizeEachWord(input string) string {
 
 	var capitalizedWords []string
 	for _, word := range words {
-		capitalizedWord := strings.Title(word)
+		capitalizedWord := cases.Title(language.Und).String(word)
 		capitalizedWords = append(capitalizedWords, capitalizedWord)
 	}
 	return strings.Join(capitalizedWords, " ")
