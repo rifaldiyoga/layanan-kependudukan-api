@@ -1,6 +1,9 @@
 package province
 
-import "layanan-kependudukan-api/helper"
+import (
+	"fmt"
+	"layanan-kependudukan-api/helper"
+)
 
 type ProvinceFormatter struct {
 	ID        int    `json:"id"`
@@ -10,6 +13,7 @@ type ProvinceFormatter struct {
 }
 
 func FormatProvince(province Province) ProvinceFormatter {
+	fmt.Print(helper.CapitalizeEachWord(province.Name))
 	formatter := ProvinceFormatter{
 		ID:        province.ID,
 		Code:      province.Code,
