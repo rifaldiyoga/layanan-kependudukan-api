@@ -10,6 +10,7 @@ type Layanan struct {
 	IsConfirm bool
 	IsSign    bool
 	Info      string
+	KodeSurat string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
