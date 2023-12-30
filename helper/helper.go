@@ -113,6 +113,68 @@ func GenerateNoKK(count int) string {
 	return "357901" + time.Now().Format("020106") + counter
 }
 
+var num = map[string]int{
+	"I": 1,
+	"V": 5,
+	"X": 10,
+	"L": 50,
+	"C": 100,
+	"D": 500,
+	"M": 1000,
+}
+
+var numInv = map[int]string{
+	1000: "M",
+	900:  "CM",
+	500:  "D",
+	400:  "CD",
+	100:  "C",
+	90:   "XC",
+	50:   "L",
+	40:   "XL",
+	10:   "X",
+	9:    "IX",
+	5:    "V",
+	4:    "IV",
+	1:    "I",
+}
+
+var maxTable = []int{
+	1000,
+	900,
+	500,
+	400,
+	100,
+	90,
+	50,
+	40,
+	10,
+	9,
+	5,
+	4,
+	1,
+}
+
+func highestDecimal(n int) int {
+	for _, v := range maxTable {
+		if v <= n {
+			return v
+		}
+	}
+	return 1
+}
+
+// ToRoman is to convert decimal number to roman numeral
+func ToRoman(n int) string {
+	out := ""
+	for n > 0 {
+		v := highestDecimal(n)
+		out += numInv[v]
+		n -= v
+	}
+	return out
+}
+
 func GenerateKodeSurat(codeLayanan string, lastCode string) string {
 	count := 0
 	if lastCode != "" {
@@ -126,9 +188,18 @@ func GenerateKodeSurat(codeLayanan string, lastCode string) string {
 		count = num
 
 	}
+	month := 1
+	num, err := strconv.Atoi(time.Now().Format("12"))
+
+	if err != nil {
+		fmt.Println("Conversion error:", err)
+		return ""
+	}
+	month = num
+
 	count = count + 1
 	counter := fmt.Sprintf("%03d", count)
-	return codeLayanan + "/" + counter + "/422.310.2/" + time.Now().Format("2006")
+	return codeLayanan + "/" + counter + "/422.310.2/" + ToRoman(month) + "/" + time.Now().Format("2006")
 }
 
 func FormatFileName(filename string) string {

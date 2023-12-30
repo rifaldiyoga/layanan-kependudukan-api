@@ -1,8 +1,6 @@
 package layanan
 
-import (
-	"layanan-kependudukan-api/helper"
-)
+import "layanan-kependudukan-api/helper"
 
 const PENDUDUKAN = "PENDUDUKAN"
 const RT = "RT"
