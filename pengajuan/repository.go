@@ -430,6 +430,17 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		currentJanda.Status = true
 		r.db.Save(&currentJanda)
 
+		//update penduduk
+		// var currentPenduduk penduduk.Penduduk
+		// err = r.db.Where("nik = ?", currentJanda.).First(&currentPenduduk).Error
+
+		// if err != nil {
+		// 	return pengajuan, err
+		// }
+		// currentPenduduk.StatusFamily = "MENINGGAL"
+		// currentPenduduk.Active = false
+		// r.db.Save(&currentPenduduk)
+
 	}
 	if currentLayanan.Code == "SKTMR" {
 		var currentRumah rumah.Rumah

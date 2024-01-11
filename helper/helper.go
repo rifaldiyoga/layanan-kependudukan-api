@@ -239,7 +239,7 @@ const CONFIG_SMTP_HOST = "smtp.gmail.com"
 const CONFIG_SMTP_PORT = 587
 const CONFIG_SENDER_NAME = "Kelurahan Ngaglik <satu.indonesia001@gmail.com>"
 const CONFIG_AUTH_EMAIL = "satu.indonesia001@gmail.com"
-const CONFIG_AUTH_PASSWORD = "sembarang007"
+const CONFIG_AUTH_PASSWORD = "Sembarang007"
 
 func sendMail(to string, subject, message string) error {
 	body := "From: " + CONFIG_SENDER_NAME + "\n" +
