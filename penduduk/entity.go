@@ -44,7 +44,7 @@ type Penduduk struct {
 	ProvinsiID   int                     `json:"province_id"`
 	Provinsi     province.Province       `json:"provinsi" gorm:"foreignKey:ProvinsiID; preload:true"`
 	JK           string                  `json:"jk"`
-	Status       bool                    `json:"status"`
+	Active       bool                    `json:"active"`
 	StatusFamily string                  `json:"status_family"`
 	CreatedAt    time.Time               `json:"created_at"`
 	UpdatedAt    time.Time               `json:"updated_at"`

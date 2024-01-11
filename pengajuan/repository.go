@@ -379,7 +379,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 			return pengajuan, err
 		}
 		currentPenduduk.StatusFamily = "MENINGGAL"
-		currentPenduduk.Status = false
+		currentPenduduk.Active = false
 		r.db.Save(&currentPenduduk)
 
 	}

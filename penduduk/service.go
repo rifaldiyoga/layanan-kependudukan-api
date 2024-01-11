@@ -100,7 +100,7 @@ func (s *service) CreatePenduduk(input CreatePendudukInput) (Penduduk, error) {
 	penduduk.StatusFamily = input.StatusFamily
 	penduduk.CreatedAt = time.Now()
 	penduduk.UpdatedAt = time.Now()
-	penduduk.Status = true
+	penduduk.Active = true
 
 	newPenduduk, err := s.repository.Save(penduduk)
 
@@ -136,7 +136,7 @@ func (s *service) UpdatePenduduk(inputDetail GetPendudukDetailInput, input Creat
 	penduduk.StatusFamily = input.StatusFamily
 	penduduk.CreatedAt = time.Now()
 	penduduk.UpdatedAt = time.Now()
-	penduduk.Status = true
+	penduduk.Active = true
 
 	newPenduduk, err := s.repository.Update(penduduk)
 	return newPenduduk, err
@@ -169,7 +169,7 @@ func (s *service) UpdatePenduduks(inputDetail int, input Penduduk) (Penduduk, er
 	penduduk.CreatedAt = input.CreatedAt
 	penduduk.StatusFamily = input.StatusFamily
 	penduduk.UpdatedAt = time.Now()
-	penduduk.Status = true
+	penduduk.Active = true
 
 	newPenduduk, err := s.repository.Update(penduduk)
 	return newPenduduk, err
