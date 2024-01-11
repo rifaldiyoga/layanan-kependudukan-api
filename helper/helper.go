@@ -230,8 +230,8 @@ func SendNotification(app *firebase.App, email string, token string, title strin
 			log.Fatalln(err)
 		}
 		fmt.Println("Successfully sent message:", response)
-		SendMail(email, title, body)
 	}
+	SendMail(email, title, body)
 
 }
 
