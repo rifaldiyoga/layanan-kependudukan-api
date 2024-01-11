@@ -40,14 +40,12 @@ func (s *service) GetLastSKU() (SKU, error) {
 func (s *service) CreateSKU(input CreateSKUInput, layanan layanan.Layanan, user user.User) (SKU, error) {
 	sku := SKU{}
 
-	lastSKU, _ := s.repository.FindLast()
-
 	sku.Keterangan = input.Keterangan
 	sku.Usaha = input.Usaha
-	sku.KodeSurat = helper.GenerateKodeSurat(layanan.Code, lastSKU.KodeSurat)
 	sku.NIK = input.NIK
 	sku.CreatedBy = user.ID
 	sku.Status = false
+	sku.Lampiran = input.Lampiran
 	sku.CreatedAt = time.Now()
 
 	newSKU, err := s.repository.Save(sku)
@@ -62,6 +60,7 @@ func (s *service) UpdateSKU(inputDetail GetSKUDetailInput, input CreateSKUInput)
 	sku.KodeSurat = input.KodeSurat
 	sku.Usaha = input.Usaha
 	sku.NIK = input.NIK
+	sku.Lampiran = input.Lampiran
 	sku.CreatedAt = time.Now()
 
 	newSKU, err := s.repository.Update(sku)

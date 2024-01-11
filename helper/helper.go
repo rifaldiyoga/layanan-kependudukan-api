@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/smtp"
 
 	"strconv"
 	"strings"
@@ -175,7 +176,7 @@ func ToRoman(n int) string {
 	return out
 }
 
-func GenerateKodeSurat(codeLayanan string, lastCode string) string {
+func GenerateKodeSurat(codeLayanan string, codeKelurahan string, lastCode string) string {
 	count := 0
 	if lastCode != "" {
 		split := strings.Split(lastCode, "/")[1]
@@ -188,18 +189,12 @@ func GenerateKodeSurat(codeLayanan string, lastCode string) string {
 		count = num
 
 	}
-	month := 1
-	num, err := strconv.Atoi(time.Now().Format("12"))
-
-	if err != nil {
-		fmt.Println("Conversion error:", err)
-		return ""
-	}
-	month = num
+	_, month, _ := time.Now().Date()
+	num := int(month)
 
 	count = count + 1
 	counter := fmt.Sprintf("%03d", count)
-	return codeLayanan + "/" + counter + "/422.310.2/" + ToRoman(month) + "/" + time.Now().Format("2006")
+	return codeLayanan + "/" + counter + "/" + codeKelurahan + "/" + ToRoman(num) + "/" + time.Now().Format("2006")
 }
 
 func FormatFileName(filename string) string {
@@ -212,7 +207,7 @@ func FormatFileName(filename string) string {
 	return processed
 }
 
-func SendNotification(app *firebase.App, token string, title string, body string) {
+func SendNotification(app *firebase.App, email string, token string, title string, body string) {
 	if token != "" {
 		ctx := context.Background()
 		client, err := app.Messaging(ctx)
@@ -235,8 +230,32 @@ func SendNotification(app *firebase.App, token string, title string, body string
 			log.Fatalln(err)
 		}
 		fmt.Println("Successfully sent message:", response)
+		sendMail(email, title, body)
 	}
 
+}
+
+const CONFIG_SMTP_HOST = "smtp.gmail.com"
+const CONFIG_SMTP_PORT = 587
+const CONFIG_SENDER_NAME = "Kelurahan Ngaglik <satu.indonesia001@gmail.com>"
+const CONFIG_AUTH_EMAIL = "satu.indonesia001@gmail.com"
+const CONFIG_AUTH_PASSWORD = "sembarang007"
+
+func sendMail(to string, subject, message string) error {
+	body := "From: " + CONFIG_SENDER_NAME + "\n" +
+		"To: " + to + "\n" +
+		"Subject: " + subject + "\n\n" +
+		message
+
+	auth := smtp.PlainAuth("", CONFIG_AUTH_EMAIL, CONFIG_AUTH_PASSWORD, CONFIG_SMTP_HOST)
+	smtpAddr := fmt.Sprintf("%s:%d", CONFIG_SMTP_HOST, CONFIG_SMTP_PORT)
+
+	err := smtp.SendMail(smtpAddr, auth, CONFIG_AUTH_EMAIL, []string{to}, []byte(body))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func CapitalizeEachWord(input string) string {

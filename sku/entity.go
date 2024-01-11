@@ -12,6 +12,7 @@ type SKU struct {
 	Usaha      string            `json:"usaha"`
 	Keterangan string            `json:"keterangan"`
 	Status     bool              `json:"status"`
+	Lampiran   string            `json:"lampiran"`
 	CreatedAt  time.Time         `json:"created_at"`
 	CreatedBy  int               `json:"created_by"`
 	Penduduk   penduduk.Penduduk `json:"penduduk" gorm:"foreignKey:NIK; references:NIK"`

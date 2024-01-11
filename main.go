@@ -178,7 +178,7 @@ func main() {
 
 	kematianRepository := kematian.NewRepsitory(db)
 	kematianService := kematian.NewService(kematianRepository)
-	kematianHandler := handler.NewKematianHandler(kematianService, layananService, *pengajuanHandler, authService)
+	kematianHandler := handler.NewKematianHandler(kematianService, layananService, pendudukService, *pengajuanHandler, authService)
 
 	berpergianDetailRepository := berpergianDetail.NewRepsitory(db)
 	berpergianDetailService := berpergianDetail.NewService(berpergianDetailRepository)

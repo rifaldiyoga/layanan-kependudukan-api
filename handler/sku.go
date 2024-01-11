@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"layanan-kependudukan-api/auth"
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/layanan"
@@ -8,6 +9,7 @@ import (
 	"layanan-kependudukan-api/sku"
 	"layanan-kependudukan-api/user"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,25 +41,25 @@ func (h *skuHandler) CreateSKU(c *gin.Context) {
 		return
 	}
 
-	// file, err := c.FormFile("lampiran")
-	// if err != nil {
-	// 	fmt.Print(err.Error())
-	// 	errors := helper.FormatValidationError(err)
-	// 	errorMessage := gin.H{"errors": errors}
+	file, err := c.FormFile("lampiran")
+	if err != nil {
+		fmt.Print(err.Error())
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
 
-	// 	response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
-	// 	c.JSON(http.StatusUnprocessableEntity, response)
-	// 	return
-	// }
+		response := helper.APIResponse("Failed create user", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
 
-	// path := helper.FormatFileName(file.Filename)
-	// filePath := filepath.Join("documents/sku", path)
-	// if err := c.SaveUploadedFile(file, filePath); err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
-	// 	return
-	// }
+	path := helper.FormatFileName(file.Filename)
+	filePath := filepath.Join("documents/sku", path)
+	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
 
-	// input.LampiranPath = filePath
+	input.Lampiran = filePath
 
 	currentLayanan, err := h.layananService.GetLayananByCode("SKU")
 	if err != nil {

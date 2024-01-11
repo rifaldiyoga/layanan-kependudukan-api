@@ -16,6 +16,7 @@ import (
 	"layanan-kependudukan-api/pernah_menikah"
 	"layanan-kependudukan-api/pindah"
 	"layanan-kependudukan-api/rumah"
+	"layanan-kependudukan-api/sistem"
 	"layanan-kependudukan-api/sktm"
 	"layanan-kependudukan-api/sku"
 	"layanan-kependudukan-api/sporadik"
@@ -172,6 +173,12 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		return pengajuan, err
 	}
 
+	var sistem sistem.Sistem
+	err = r.db.First(&sistem).Error
+	if err != nil {
+		return pengajuan, err
+	}
+
 	if currentLayanan.Code == "SKTM" {
 		var currentSKTM sktm.SKTM
 		err := r.db.Where("id = ?", pengajuan.RefID).First(&currentSKTM).Error
@@ -183,7 +190,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastSKTM sktm.SKTM
 		_ = r.db.Where("kode_surat != ''").Last(&lastSKTM).Error
 
-		currentSKTM.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastSKTM.KodeSurat)
+		currentSKTM.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastSKTM.KodeSurat)
 		currentSKTM.Status = true
 		r.db.Save(&currentSKTM)
 
@@ -200,7 +207,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastSKU sku.SKU
 		_ = r.db.Where("kode_surat != ''").Last(&lastSKU).Error
 
-		currentSKU.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastSKU.KodeSurat)
+		currentSKU.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastSKU.KodeSurat)
 		currentSKU.Status = true
 		r.db.Save(&currentSKU)
 
@@ -216,7 +223,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastSKD domisili.Domisili
 		_ = r.db.Where("kode_surat != ''").Last(&lastSKD).Error
 
-		currentSKD.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastSKD.KodeSurat)
+		currentSKD.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastSKD.KodeSurat)
 		currentSKD.Status = true
 		r.db.Save(&currentSKD)
 
@@ -232,7 +239,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastBerpergian berpergian.Berpergian
 		_ = r.db.Where("kode_surat != ''").Last(&lastBerpergian).Error
 
-		currentBerpergian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastBerpergian.KodeSurat)
+		currentBerpergian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastBerpergian.KodeSurat)
 		currentBerpergian.Status = true
 		r.db.Save(&currentBerpergian)
 
@@ -248,7 +255,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastTanah tanah.Tanah
 		_ = r.db.Where("kode_surat != ''").Last(&lastTanah).Error
 
-		currentTanah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastTanah.KodeSurat)
+		currentTanah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastTanah.KodeSurat)
 		currentTanah.Status = true
 		r.db.Save(&currentTanah)
 
@@ -264,7 +271,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastSporadik sporadik.Sporadik
 		_ = r.db.Where("kode_surat != ''").Last(&lastSporadik).Error
 
-		currentSporadik.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastSporadik.KodeSurat)
+		currentSporadik.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastSporadik.KodeSurat)
 		currentSporadik.Status = true
 		r.db.Save(&currentSporadik)
 
@@ -280,7 +287,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastKeramaian keramaian.Keramaian
 		_ = r.db.Where("kode_surat != ''").Last(&lastKeramaian).Error
 
-		currentKeramaian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastKeramaian.KodeSurat)
+		currentKeramaian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastKeramaian.KodeSurat)
 		currentKeramaian.Status = true
 		r.db.Save(&currentKeramaian)
 
@@ -296,7 +303,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastPindah pindah.Pindah
 		_ = r.db.Where("kode_surat != ''").Last(&lastPindah).Error
 
-		currentPindah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastPindah.KodeSurat)
+		currentPindah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastPindah.KodeSurat)
 		currentPindah.Status = true
 		r.db.Save(&currentPindah)
 
@@ -312,7 +319,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastPernahMenikah pernah_menikah.PernahMenikah
 		_ = r.db.Where("kode_surat != ''").Last(&lastPernahMenikah).Error
 
-		currentPernahMenikah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastPernahMenikah.KodeSurat)
+		currentPernahMenikah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastPernahMenikah.KodeSurat)
 		currentPernahMenikah.Status = true
 		r.db.Save(&currentPernahMenikah)
 
@@ -328,7 +335,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastBelumMenikah belum_menikah.BelumMenikah
 		_ = r.db.Where("kode_surat != ''").Last(&lastBelumMenikah).Error
 
-		currentBelumMenikah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastBelumMenikah.KodeSurat)
+		currentBelumMenikah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastBelumMenikah.KodeSurat)
 		currentBelumMenikah.Status = true
 		r.db.Save(&currentBelumMenikah)
 
@@ -344,7 +351,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastKelahiran kelahiran.Kelahiran
 		_ = r.db.Where("kode_surat != ''").Last(&lastKelahiran).Error
 
-		currentKelahiran.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastKelahiran.KodeSurat)
+		currentKelahiran.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastKelahiran.KodeSurat)
 		currentKelahiran.Status = true
 		r.db.Save(&currentKelahiran)
 
@@ -360,9 +367,20 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastKematian kematian.Kematian
 		_ = r.db.Where("kode_surat != ''").Last(&lastKematian).Error
 
-		currentKematian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastKematian.KodeSurat)
+		currentKematian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastKematian.KodeSurat)
 		currentKematian.Status = true
 		r.db.Save(&currentKematian)
+
+		//update penduduk
+		var currentPenduduk penduduk.Penduduk
+		err = r.db.Where("nik = ?", currentKematian.NikJenazah).First(&currentPenduduk).Error
+
+		if err != nil {
+			return pengajuan, err
+		}
+		currentPenduduk.StatusFamily = "MENINGGAL"
+		currentPenduduk.Status = false
+		r.db.Save(&currentPenduduk)
 
 	}
 	if currentLayanan.Code == "SPCK" {
@@ -376,7 +394,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastKepolisian kepolisian.Kepolisian
 		_ = r.db.Where("kode_surat != ''").Last(&lastKepolisian).Error
 
-		currentKepolisian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastKepolisian.KodeSurat)
+		currentKepolisian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastKepolisian.KodeSurat)
 		currentKepolisian.Status = true
 		r.db.Save(&currentKepolisian)
 
@@ -392,7 +410,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastPenghasilan penghasilan.Penghasilan
 		_ = r.db.Where("kode_surat != ''").Last(&lastPenghasilan).Error
 
-		currentPenghasilan.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastPenghasilan.KodeSurat)
+		currentPenghasilan.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastPenghasilan.KodeSurat)
 		currentPenghasilan.Status = true
 		r.db.Save(&currentPenghasilan)
 
@@ -408,7 +426,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastJanda janda.Janda
 		_ = r.db.Where("kode_surat != ''").Last(&lastJanda).Error
 
-		currentJanda.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastJanda.KodeSurat)
+		currentJanda.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastJanda.KodeSurat)
 		currentJanda.Status = true
 		r.db.Save(&currentJanda)
 
@@ -424,7 +442,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastRumah rumah.Rumah
 		_ = r.db.Where("kode_surat != ''").Last(&lastRumah).Error
 
-		currentRumah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastRumah.KodeSurat)
+		currentRumah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastRumah.KodeSurat)
 		currentRumah.Status = true
 		r.db.Save(&currentRumah)
 
@@ -440,7 +458,7 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		var lastBerpergian berpergian.Berpergian
 		_ = r.db.Where("kode_surat != ''").Last(&lastBerpergian).Error
 
-		currentBerpergian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, lastBerpergian.KodeSurat)
+		currentBerpergian.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastBerpergian.KodeSurat)
 		currentBerpergian.Status = true
 		r.db.Save(&currentBerpergian)
 

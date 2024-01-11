@@ -5,9 +5,10 @@ type GetSKUDetailInput struct {
 }
 
 type CreateSKUInput struct {
-	KodeSurat  string `json:"kode_surat"`
-	Usaha      string `json:"usaha" binding:"required"`
-	Keterangan string `json:"keterangan" binding:"required"`
-	NIK        string `json:"nik" `
-	Status     string `json:"status"`
+	KodeSurat  string `form:"kode_surat"`
+	Usaha      string `form:"usaha" binding:"required"`
+	Keterangan string `form:"keterangan" binding:"required"`
+	NIK        string `form:"nik" `
+	Status     string `form:"status"`
+	Lampiran   string `form:"lampiran_path"`
 }

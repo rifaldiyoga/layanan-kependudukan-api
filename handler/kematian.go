@@ -5,6 +5,7 @@ import (
 	"layanan-kependudukan-api/helper"
 	"layanan-kependudukan-api/kematian"
 	"layanan-kependudukan-api/layanan"
+	"layanan-kependudukan-api/penduduk"
 	"layanan-kependudukan-api/pengajuan"
 	"layanan-kependudukan-api/user"
 	"net/http"
@@ -16,12 +17,13 @@ import (
 type kematianHandler struct {
 	kematianService  kematian.Service
 	layananService   layanan.Service
+	pendudukService  penduduk.Service
 	pengajuanHandler pengajuanHandler
 	authService      auth.Service
 }
 
-func NewKematianHandler(kematianService kematian.Service, layananService layanan.Service, pengajuanHandler pengajuanHandler, authService auth.Service) *kematianHandler {
-	return &kematianHandler{kematianService, layananService, pengajuanHandler, authService}
+func NewKematianHandler(kematianService kematian.Service, layananService layanan.Service, pendudukService penduduk.Service, pengajuanHandler pengajuanHandler, authService auth.Service) *kematianHandler {
+	return &kematianHandler{kematianService, layananService, pendudukService, pengajuanHandler, authService}
 }
 
 func (h *kematianHandler) CreateKematian(c *gin.Context) {

@@ -302,11 +302,11 @@ func (h *pengajuanHandler) SendNotification(c *gin.Context, pengajuan pengajuan.
 	}
 
 	if pengajuan.Status == "PENDING_RT" {
-		helper.SendNotification(h.app, rtUser.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
+		helper.SendNotification(h.app, rtUser.Email, rtUser.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
 	}
 	if pengajuan.Status == "PENDING_ADMIN" {
 		for _, value := range adminUser {
-			helper.SendNotification(h.app, value.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
+			helper.SendNotification(h.app, value.Email, value.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
 		}
 	}
 	if pengajuan.Status == "REJECTED_RT" || pengajuan.Status == "REJECTED_RW" || pengajuan.Status == "REJECTED" {
@@ -318,23 +318,23 @@ func (h *pengajuanHandler) SendNotification(c *gin.Context, pengajuan pengajuan.
 		if pengajuan.Status == "REJECTED_RW" {
 			name = RW.Fullname
 		}
-		helper.SendNotification(h.app, pengajuUser.Token, "Pengajuan Ditolak "+currentUser.Role+"!", "Pengajuan "+pengajuan.Layanan+" telah ditolak oleh "+name)
+		helper.SendNotification(h.app, pengajuUser.Email, pengajuUser.Token, "Pengajuan Ditolak "+currentUser.Role+"!", "Pengajuan "+pengajuan.Layanan+" telah ditolak oleh "+name)
 	}
 	if pengajuan.Status == "APPROVED_RT" {
 		// kriim notif ke rw dan user
-		helper.SendNotification(h.app, rwUser.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
-		helper.SendNotification(h.app, pengajuUser.Token, "Pengajuan Disetujui RT!", "Pengajuan "+pengajuan.Layanan+" telah disetujui oleh "+RT.Fullname)
+		helper.SendNotification(h.app, rwUser.Email, rwUser.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
+		helper.SendNotification(h.app, pengajuUser.Email, pengajuUser.Token, "Pengajuan Disetujui RT!", "Pengajuan "+pengajuan.Layanan+" telah disetujui oleh "+RT.Fullname)
 	}
 	if pengajuan.Status == "APPROVED_RW" {
 		// kiriim notif ke admin dan user
-		helper.SendNotification(h.app, pengajuUser.Token, "Pengajuan Disetujui RW!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
+		helper.SendNotification(h.app, pengajuUser.Email, pengajuUser.Token, "Pengajuan Disetujui RW!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
 		for _, value := range adminUser {
-			helper.SendNotification(h.app, value.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
+			helper.SendNotification(h.app, value.Email, value.Token, "Pengajuan Surat Baru!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
 		}
 	}
 	if pengajuan.Status == "VALID" {
 		// kiriim notif ke admin dan user
-		helper.SendNotification(h.app, pengajuUser.Token, "Pengajuan Disetujui Kelurahan!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
+		helper.SendNotification(h.app, pengajuUser.Email, pengajuUser.Token, "Pengajuan Disetujui Kelurahan!", "Pengajuan "+pengajuan.Layanan+" dari "+pengajuan.Name)
 	}
 
 }
