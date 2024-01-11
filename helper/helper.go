@@ -230,18 +230,18 @@ func SendNotification(app *firebase.App, email string, token string, title strin
 			log.Fatalln(err)
 		}
 		fmt.Println("Successfully sent message:", response)
-		sendMail(email, title, body)
+		SendMail(email, title, body)
 	}
 
 }
 
-const CONFIG_SMTP_HOST = "smtp.gmail.com"
+const CONFIG_SMTP_HOST = "smtp-relay.brevo.com"
 const CONFIG_SMTP_PORT = 587
 const CONFIG_SENDER_NAME = "Kelurahan Ngaglik <satu.indonesia001@gmail.com>"
 const CONFIG_AUTH_EMAIL = "satu.indonesia001@gmail.com"
-const CONFIG_AUTH_PASSWORD = "Sembarang007"
+const CONFIG_AUTH_PASSWORD = "XTEzAqm2nFd8MWbj"
 
-func sendMail(to string, subject, message string) error {
+func SendMail(to string, subject, message string) error {
 	body := "From: " + CONFIG_SENDER_NAME + "\n" +
 		"To: " + to + "\n" +
 		"Subject: " + subject + "\n\n" +
@@ -252,6 +252,7 @@ func sendMail(to string, subject, message string) error {
 
 	err := smtp.SendMail(smtpAddr, auth, CONFIG_AUTH_EMAIL, []string{to}, []byte(body))
 	if err != nil {
+		fmt.Print(err)
 		return err
 	}
 
