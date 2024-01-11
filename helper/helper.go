@@ -247,6 +247,8 @@ func SendMail(to string, subject, message string) error {
 		"Subject: " + subject + "\n\n" +
 		message
 
+	fmt.Print(body)
+
 	auth := smtp.PlainAuth("", CONFIG_AUTH_EMAIL, CONFIG_AUTH_PASSWORD, CONFIG_SMTP_HOST)
 	smtpAddr := fmt.Sprintf("%s:%d", CONFIG_SMTP_HOST, CONFIG_SMTP_PORT)
 
