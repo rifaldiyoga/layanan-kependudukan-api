@@ -15,6 +15,7 @@ import (
 	"layanan-kependudukan-api/penghasilan"
 	"layanan-kependudukan-api/pernah_menikah"
 	"layanan-kependudukan-api/pindah"
+	"layanan-kependudukan-api/pindah_detail"
 	"layanan-kependudukan-api/rumah"
 	"layanan-kependudukan-api/sistem"
 	"layanan-kependudukan-api/sktm"
@@ -306,6 +307,26 @@ func (r *repository) UpdateStatus(pengajuan Pengajuan) (Pengajuan, error) {
 		currentPindah.KodeSurat = helper.GenerateKodeSurat(currentLayanan.KodeSurat, sistem.Code, lastPindah.KodeSurat)
 		currentPindah.Status = true
 		r.db.Save(&currentPindah)
+
+		//update penduduk
+		var detailPindah []pindah_detail.PindahDetail
+		err = r.db.Where("pindah_id = ?", currentPindah.ID).Find(&detailPindah).Error
+
+		if err != nil {
+			return pengajuan, err
+		}
+
+		for _, detail := range detailPindah {
+			var currentPenduduk penduduk.Penduduk
+			err = r.db.Where("nik = ?", detail.NIK).First(&currentPenduduk).Error
+
+			if err != nil {
+				return pengajuan, err
+			}
+
+			currentPenduduk.Active = false
+			r.db.Save(&currentPenduduk)
+		}
 
 	}
 	if currentLayanan.Code == "SKPN" {

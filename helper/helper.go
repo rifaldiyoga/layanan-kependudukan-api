@@ -232,7 +232,6 @@ func SendNotification(app *firebase.App, email string, token string, title strin
 		fmt.Println("Successfully sent message:", response)
 	}
 	SendMail(email, title, body)
-
 }
 
 const CONFIG_SMTP_HOST = "smtp-relay.brevo.com"
