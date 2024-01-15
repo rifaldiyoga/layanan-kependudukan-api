@@ -36,6 +36,7 @@ func (r *repository) FindAll(pagination helper.Pagination, NIK string) (helper.P
 	if NIK != "" {
 		data = data.Where("no_kk = ?", NIK)
 	}
+	data = data.Where("active = ?", true)
 	err := data.Scopes(helper.Paginate(penduduks, &pagination, data)).Find(&penduduks).Error
 	if err != nil {
 		return pagination, err
@@ -67,7 +68,7 @@ func (r *repository) FindByNIK(ID string) (Penduduk, error) {
 
 func (r *repository) FindByNoKK(ID string) ([]Penduduk, error) {
 	var penduduks []Penduduk
-	err := r.db.Where("no_kk = ?", ID).Find(&penduduks).Error
+	err := r.db.Where("no_kk = ? AND active = ?", ID, true).Find(&penduduks).Error
 	if err != nil {
 		return penduduks, err
 	}
