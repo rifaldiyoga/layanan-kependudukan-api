@@ -31,7 +31,7 @@ func (h *skuHandler) CreateSKU(c *gin.Context) {
 	userObject, _ := c.Get("currentUser")
 	currentUser := userObject.(user.User)
 
-	err := c.ShouldBindJSON(&input)
+	err := c.ShouldBind(&input)
 	if err != nil {
 		errors := helper.FormatValidationError(err)
 		errorMessage := gin.H{"errors": errors}
